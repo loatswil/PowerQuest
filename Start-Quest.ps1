@@ -90,8 +90,6 @@ while (1) {
         $R = (Get-Random 20)
         $Exp = (1.5 * $L)
         for ($E = 1; $E -le $Exp; $E++){
-            $wsh = New-Object -ComObject WScript.Shell
-            $wsh.SendKeys('+{F15}')
             if ((Get-Random 100) -le 100) {$Gear = Build-Gear}
             $GearLoop = @{ID = 3; Activity = "Equipment:"; Status = $Gear}
             $ExpLoop = @{ID = 4; Activity = "Current level:"; Status = "Experience:"; PercentComplete = $E/$Exp * 100}
