@@ -81,11 +81,11 @@ Function Build-Gear {
 Clear-Host
 
 while (1) {
-    
+    $Char['name']=($env:username)
     for ($L = 1; $L -le 100; $L++) {
         $Align = (Get-Align)
         #[console]::beep(4000,150)
-        $LevelLoop = @{ID = 0; Activity = "Level $L IT Engineer"; Status = "$Align"}
+        $LevelLoop = @{ID = 0; Activity = "$env:username, Level $L IT Engineer"; Status = "$Align"}
         Write-Progress @LevelLoop
         $R = (Get-Random 20)
         $Exp = (1.5 * $L)
