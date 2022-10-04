@@ -97,8 +97,6 @@ while (1) {
             Write-Progress @Exploop
             $Quest = (Get-Quest)
             #[console]::beep(3000,150)
-            $wsh = New-Object -ComObject WScript.Shell
-            $wsh.SendKeys('+{F15}')
             for($B = 1; $B -le $R; $B++) {
                 $Task = (Get-Task)
                 $QuestLoop = @{ID = 1; Activity = "Current Quest: $Quest"; Status = "Progress->"; PercentComplete = $B/$R * 100}
