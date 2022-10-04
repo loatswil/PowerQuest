@@ -84,7 +84,7 @@ while (1) {
     
     for ($L = 1; $L -le 100; $L++) {
         $Align = (Get-Align)
-        [console]::beep(4000,150)
+        #[console]::beep(4000,150)
         $LevelLoop = @{ID = 0; Activity = "Level $L IT Engineer"; Status = "$Align"}
         Write-Progress @LevelLoop
         $R = (Get-Random 20)
