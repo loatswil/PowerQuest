@@ -74,7 +74,7 @@ Function Build-Gear {
     $Item = Randomize-List -InputList $Items
     $Bonus = Randomize-List -InputList $Bonuses
     $Mod = $Mod.substring(0,1).toupper()+$Mod.substring(1).tolower()
-    $Roll = (Get-Random 10)
+    $Roll = (Get-Random -Minimum 1 -Maximum 9)
     Write-Output "$Mod +$Roll $Mat $Item $Bonus"
 }
 
