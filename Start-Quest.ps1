@@ -1,5 +1,6 @@
-﻿$Char = @{};$Adverbs = @();$Actions = @();$Apps = @();$Objects = @()
+﻿$Adverbs = @();$Actions = @();$Apps = @();$Objects = @()
 $Mods = @();$Mats = @();$Items = @();$Bonuses = @();$Gear = @()
+$Titles = @{};$Char = @{}
 $Alignments = @()
 $Alignments = @('Lawful Good - White Hat','Neutral Good - Cream Hat','Chaotic Good - Beige Hat',
     'Lawful Neutral - Light-Grey Hat','True Neutral - Grey Hat','Chaotic Neutral - Dark-Grey Hat',
@@ -40,8 +41,7 @@ $Items = @('goggles','mouse pad','haptic gloves','t-shirt','headset','visor','po
 $Bonuses = @('of grepping','of editing','of application slaying','of cloud slaying','of database monitoring',
     'of spreadsheet sorting','of log searching','of portal slaying','of Azure','of event parsing')
 
-function Randomize-List
-{
+function Randomize-List {
    Param(
      [array]$InputList
    )
@@ -68,6 +68,14 @@ function Get-Task {
     Write-Output "$Adverb $Action $Object..."
 }
 
+function Say-Level {
+    Add-Type -AssemblyName System.speech
+    $speak = New-Object System.Speech.Synthesis.SpeechSynthesizer
+    $speak.Rate   = 2  # -10 to 10; -10 is slowest, 10 is fastest
+    $level = $Char.level
+    $speak.Speak("Congrats on level $level")
+}
+
 Function Build-Gear {
     $Mod = Randomize-List -InputList $Mods
     $Mat = Randomize-List -InputList $Mats
@@ -78,14 +86,30 @@ Function Build-Gear {
     Write-Output "$Mod +$Roll $Mat $Item $Bonus"
 }
 
+Function Build-Title {
+    Param(
+         [int]$InputLevel
+       )
+    Switch ($InputLevel) {
+    {$_ -in 1..9} {$Title = "Help Desk Monkey"}
+    {$_ -in 10..19} {$Title = "System Administrator"}
+    {$_ -in 20..39} {$Title = "IT Engineer"}
+    {$_ -in 40..69} {$Title = "IT Engineer II"}
+    {$_ -in 70..100} {$Title = "IT Architect"}
+    }
+    return $Title
+}
+
 Clear-Host
 
 while (1) {
     $Char['name']=($env:username)
     for ($L = 1; $L -le 100; $L++) {
+        $Char['level']=$L
+        $Title = (Build-Title $L)
         $Align = (Get-Align)
-        #[console]::beep(4000,150)
-        $LevelLoop = @{ID = 0; Activity = "$env:username, Level $L IT Engineer"; Status = "$Align"}
+        #Say-Level
+        $LevelLoop = @{ID = 0; Activity = "$env:username, Level $L $Title"; Status = "$Align"}
         Write-Progress @LevelLoop
         $R = (Get-Random 20)
         $Exp = (1.5 * $L)
@@ -97,6 +121,8 @@ while (1) {
             Write-Progress @Exploop
             $Quest = (Get-Quest)
             #[console]::beep(3000,150)
+            $wsh = New-Object -ComObject WScript.Shell
+            $wsh.SendKeys('+{F15}')
             for($B = 1; $B -le $R; $B++) {
                 $Task = (Get-Task)
                 $QuestLoop = @{ID = 1; Activity = "Current Quest: $Quest"; Status = "Progress->"; PercentComplete = $B/$R * 100}
