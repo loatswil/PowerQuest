@@ -1,4 +1,4 @@
-﻿$Adverbs = @();$Actions = @();$Apps = @();$Objects = @()
+﻿$Char = @{};$Adverbs = @();$Actions = @();$Apps = @();$Objects = @()
 $Mods = @();$Mats = @();$Items = @();$Bonuses = @();$Gear = @()
 $Alignments = @()
 $Alignments = @('Lawful Good - White Hat','Neutral Good - Cream Hat','Chaotic Good - Beige Hat',
@@ -38,7 +38,7 @@ $Mats = @('golden','platinum','silver','iron','mithril','emerald','ruby',
 $Items = @('goggles','mouse pad','haptic gloves','t-shirt','headset','visor','pocket protector','CAT5 cable',
     'keyboard','mouse','monitor','USB stick','floppy disk','hard drive')
 $Bonuses = @('of grepping','of editing','of application slaying','of cloud slaying','of database monitoring',
-    'of spreadsheet sorting','of log searching','of portal slaying','of Azure','event parsing')
+    'of spreadsheet sorting','of log searching','of portal slaying','of Azure','of event parsing')
 
 function Randomize-List
 {
@@ -53,7 +53,7 @@ function Get-Align {
     Write-Output "$Align"
 }
 
-function Get-Project {
+function Get-Quest {
     $Action = Randomize-List -InputList $Actions
     $App = Randomize-List -InputList $Apps
     $Action = $Action.substring(0,1).toupper()+$Action.substring(1).tolower()
@@ -84,24 +84,28 @@ while (1) {
     
     for ($L = 1; $L -le 100; $L++) {
         $Align = (Get-Align)
+        [console]::beep(4000,150)
         $LevelLoop = @{ID = 0; Activity = "Level $L IT Engineer"; Status = "$Align"}
         Write-Progress @LevelLoop
-        $R = (Get-Random 50)
-        for ($E = 1; $E -le 30; $E++){
+        $R = (Get-Random 20)
+        $Exp = (1.5 * $L)
+        for ($E = 1; $E -le $Exp; $E++){
             $wsh = New-Object -ComObject WScript.Shell
             $wsh.SendKeys('+{F15}')
             if ((Get-Random 100) -le 100) {$Gear = Build-Gear}
-            $GearLoop = @{ID = 3; Activity = "Equipment:"; Status = "$Gear"}
-            $ExpLoop = @{ID = 4; Activity = "Current level:"; Status = "Experience:"; PercentComplete = $E/30 * 100}
+            $GearLoop = @{ID = 3; Activity = "Equipment:"; Status = $Gear}
+            $ExpLoop = @{ID = 4; Activity = "Current level:"; Status = "Experience:"; PercentComplete = $E/$Exp * 100}
             Write-Progress @GearLoop
             Write-Progress @Exploop
-            $Project = (Get-Project)
+            $Quest = (Get-Quest)
+            #[console]::beep(3000,150)
+            $wsh = New-Object -ComObject WScript.Shell
+            $wsh.SendKeys('+{F15}')
             for($B = 1; $B -le $R; $B++) {
                 $Task = (Get-Task)
-                $Stat2 = (($B/$R) * 100).ToString("#")
-                $ProjectLoop = @{ID = 1; Activity = "Current Quest: $Project"; Status = "Progress->"; PercentComplete = $B/$R * 100}
-                Write-Progress @ProjectLoop
-                $R2 = (Get-Random 100)
+                $QuestLoop = @{ID = 1; Activity = "Current Quest: $Quest"; Status = "Progress->"; PercentComplete = $B/$R * 100}
+                Write-Progress @QuestLoop
+                $R2 = (Get-Random 75)
                 for($A = 1; $A -le $R2; $A++ ) {
                     $Stat3 = (($A/$R2) * 100).ToString("#")
                     $TaskLoop = @{ID = 2; Activity = $Task; Status = "Progress-->"; PercentComplete = $A/$R2 * 100}
