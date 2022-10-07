@@ -1,11 +1,4 @@
-﻿<# 
-ToDo
-    Build Show-Progress that takes int and counts that far...
-    Add alignment into random choice when levelling
-    Add titles based on level
-#>
-
-$Char = @{}
+﻿$Char = @{}
 $Adverbs = @();$Actions = @();$Apps = @();$Objects = @()
 $Mods = @();$Mats = @();$Items = @();$Bonuses = @();$Gear = @()
 $Alignments = @()
@@ -47,6 +40,10 @@ $Items = @('visor','goggles','t-shirt','cell phone','USB stick','hard drive','CA
     'keyboard','mouse','monitor','disk','floppy disk')
 $Bonuses = @('of greping','of editing','of application slaying','of Cloud slaying','of database monitoring',
     'of spreadsheet sorting','of log searching','of portal slaying','of Azure','of ticket closing','of event parsing')
+$Classes = @('Druid','Mage','Warrior',
+    'Ranger','Monk','Cleric','Paladin')
+$Races = @('Human','Elf','Dwarf','Hobbit',
+    'Orc','Goblin')
 
 function Randomize-List {
    Param(
@@ -131,7 +128,13 @@ Function Build-Gear {
     Write-Output "$Mod +$Roll $Mat $Item $Bonus"
 }
 
-function Choose-Class {
+function Get-Class {
+    $Class = Randomize-List -InputList $Classes
+    Write-Output "$Class"
+    $Char.class = $Class
+}
+
+Function Choose-Class {
     param (
         [string]$Title = 'Choose your class:'
     )
@@ -157,6 +160,12 @@ function Choose-Class {
     default {'Druid'}
     }
     $Char['Class']=$Class
+}
+
+function Get-Race {
+    $Race = Randomize-List -InputList $Races
+    Write-Output "$Race"
+    $Char.race = $Race
 }
 
 function Choose-Race {
@@ -185,9 +194,12 @@ function Choose-Race {
     $Char['Race']=$Race
 }
 
+Function Get-Name {
+    $Char['name']=($env:username)
+}
+
 Function Choose-Name {
     $Name = Read-Host "Character name?"
-    $Char['Name']=$Name
 }
 
 function Write-Menu {
@@ -205,13 +217,13 @@ Function Do-Quest {
     Param(
      [int]$CurrentLevel
     )
-    $Exp = (Get-Random -Minimum 1 -Maximum 5)
+    $Exp = (Get-Random -Minimum 2 -Maximum 5)
     for($Q = 1; $Q -le $Exp; $Q++) {
         $Quest = (Get-Quest)
         Write-Host ""
         Show-Progress "Current Quest: $Quest"
         Write-Host "";Write-Host ""
-        $RandomTask=(Get-Random -Minimum 1 -Maximum 5)
+        $RandomTask=(Get-Random -Minimum 2 -Maximum 10)
         for($T = 1; $T -le $RandomTask; $T++ ) {
             $Task = (Get-Task)
             Show-Progress "$Task"
@@ -220,11 +232,12 @@ Function Do-Quest {
             }
         }
     $Exp += $Char['Experience']
+    $Char['Experience'] = $Exp
     $Gear = (Build-Gear)
     $Char['Weapon'] = $Gear
-    $Char['Experience'] = $Exp
     if ($Exp -ge ($CurrentLevel * 10)){
-    $Char.Level++
+        $Char.align = (Get-Align)
+        $Char.Level++
     }
 }
 
@@ -254,45 +267,49 @@ Function Get-Stats {
     Show-Progress "Rolling CHA"
     Write-Host "";Write-Host "$CHA"
     $Char['cha']=$CHA
-    Pause
+    $Char.align = (Get-Align)
+    #Pause
+    Start-Sleep 2
 }
 
 Function Main {
     Clear-Host
     $Name=($Char.name);$Level=($Char.level);$Race=($Char.race)
-    $Class=($Char.class);$STR=($Char.str);$Con=($Char.con);
-    $INT=($Char.int);$DEX=($Char.dex);$WIS=($Char.wis);$CHA=($Char.cha);
-    $Weapon=($Char.weapon)
+    $Class=($Char.class);$STR=($Char.str);$Con=($Char.con);$EXP=($Char.experience)
+    $INT=($Char.int);$DEX=($Char.dex);$WIS=($Char.wis);$CHA=($Char.cha)
+    $Alignment=$Char.align;$Weapon=($Char.weapon)
     $Title = (Build-Title $Level)
-    Write-Host "======================================================================"
+    Write-Host "========================================================================"
     Write-Host "|"
-    Write-Host "| Welcome $Name, level $Level $Title"
-    Write-Host "| $Race $Class"
+    Write-Host "| Welcome $Name, $Race $Class"
+    Write-Host "| $Alignment"
+    Write-Host "| Level $Level $Title"
     Write-Host "| Current Weapon: $Weapon"
     Write-Host "|"
     Write-Host "| Stats:"
-    Write-Host "| Strength: $STR"
-    Write-Host "| Dexterity: $DEX"
+    Write-Host "| Strength:     $STR"
+    Write-Host "| Dexterity:    $DEX"
     Write-Host "| Constitution: $CON"
     Write-Host "| Intelligence: $INT"
-    Write-Host "| Wisdom: $WIS"
-    Write-Host "| Charisma: $CHA"
-    Write-Host "|"
-    Write-Host "======================================================================"
+    Write-Host "| Wisdom:       $WIS"
+    Write-Host "| Charisma:     $CHA"
+    Write-Host "| Experience:   $EXP"
+    Write-Host "========================================================================"
     Do-Quest $Level
 }
-
-Write-Menu
-Choose-Class
-Choose-Race
-Get-Stats
 
 if (!($Char.level)){$Char.level = 1}
 if (!($Char.name)){$Char.name = "Wilgrin"}
 #if (!($Name)){$Name = "Gwendoveer"}
 
-$Char.Add('Weapon', $Gear)
-$Char.Add('Alignment', $Alignment)
+Write-Menu
+#Choose-Name
+Get-Name
+#Choose-Class
+Get-Class
+#Choose-Race
+Get-Race
+Get-Stats
 
 do {
     Main
