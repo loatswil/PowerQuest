@@ -58,9 +58,16 @@ function Show-Progress {
         [int]$count=3
         ) 
     Write-Host "$text" -nonewline
-    $i=0
-    while ($i -le $count) {
-        Write-Host "." -NoNewline;$i++
+    for($i=1;$i -le $count;$i++) {
+        Write-Host "." -NoNewline
+        Start-Sleep -Milliseconds 100
+        }
+}
+
+function Show-Bar {
+    param ([int]$count=3) 
+    For($i=1;$i -le $count;$i++) {
+        Write-Host "o" -NoNewline
         Start-Sleep -Milliseconds 100
         }
 }
@@ -213,11 +220,11 @@ Function Do-Quest {
     Foreach($N in $Numberset) {
         $Quest = (Get-Quest)
         Write-Host ""
-        Show-Progress -text "Current Quest: $Quest" -count 0
+        Show-Progress -text "Current Quest: $Quest" -count 1
         Write-Host ""
         For($T = 1; $T -le $N; $T++ ) {
             $Task = (Get-Task)
-            Show-Progress -text "     $Task" -count 2
+            Show-Progress -text "     $Task" -count (Get-Random -Minimum 2 -Maximum 20)
             Write-Host ""
             Start-Sleep -Milliseconds (Get-Random 100)
             }
@@ -309,12 +316,13 @@ Function Main {
     $INT=($Char.int);$DEX=($Char.dex);$WIS=($Char.wis);$CHA=($Char.cha)
     $Alignment=$Char.align;$Weapon=($Char.weapon)
     $Title = (Build-Title $Level)
-    Write-Host "========================================================================"
+    Write-Host "================================================================="
     Write-Host "|"
     Write-Host "| Welcome $Name, $Race $Class"
     Write-Host "| $Alignment"
     Write-Host "| Level $Level $Title"
-    Write-Host "| Current Weapon: $Weapon"
+    Write-Host "| Current Weapon: "
+    Write-Host "| $Weapon"
     Write-Host "|"
     Write-Host "| Stats:"
     Write-Host "| Strength:     $STR"
@@ -324,7 +332,7 @@ Function Main {
     Write-Host "| Wisdom:       $WIS"
     Write-Host "| Charisma:     $CHA"
     Write-Host "| Experience:   $EXP"
-    Write-Host "========================================================================"
+    Write-Host "================================================================="
     Do-Quest $Level
 }
 
