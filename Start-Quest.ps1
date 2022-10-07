@@ -216,27 +216,35 @@ Function Do-Quest {
     )
     Write-Host "Rolling some quests..."
     $Exp = (Get-Random -Minimum 2 -Maximum 6)
-    $Numberset = (Get-AsciiDice -Amount $Exp)
-    Foreach($N in $Numberset) {
+    $QuestRoll = (Get-AsciiDice -Amount $Exp)
+    Foreach($Q in $QuestRoll) {
         $Quest = (Get-Quest)
         Write-Host ""
         Show-Progress -text "Current Quest: $Quest" -count 1
         Write-Host ""
-        For($T = 1; $T -le $N; $T++ ) {
+        For($T = 1; $T -le $Q; $T++ ) {
             $Task = (Get-Task)
             Show-Progress -text "     $Task" -count (Get-Random -Minimum 2 -Maximum 20)
             Write-Host ""
             Start-Sleep -Milliseconds (Get-Random 100)
             }
     }
+    Write-Host ""
+    $GLD = (Get-Random -Minimum 0 -Maximum $Exp)
+    Write-Host "Gold earned: $GLD"
+    $Char.gold += $GLD
+    Write-Host "Experience gained: $Exp"
     $Exp += $Char['Experience']
-    $Char['Experience'] = $Exp
-    $Gear = (Build-Gear)
-    $Char['Weapon'] = $Gear
+    $Char.Experience = $Exp
+    if ((Get-Random -Minimum 1 -Maximum 100) -le 25) {
+        $Gear = Build-Gear
+        $Char['Weapon'] = $Gear
+        Write-Host "New loot: $Gear"
+        }
     if ($Exp -ge ($CurrentLevel * 10)){
         $Char.align = (Get-Align)
         $Char.Level++
-    }
+        }
 }
 
 Function Get-Stats {
@@ -313,7 +321,7 @@ Function Main {
     Clear-Host
     $Name=($Char.name);$Level=($Char.level);$Race=($Char.race)
     $Class=($Char.class);$STR=($Char.str);$Con=($Char.con);$EXP=($Char.experience)
-    $INT=($Char.int);$DEX=($Char.dex);$WIS=($Char.wis);$CHA=($Char.cha)
+    $INT=($Char.int);$DEX=($Char.dex);$WIS=($Char.wis);$CHA=($Char.cha);$GLD=($Char.gold)
     $Alignment=$Char.align;$Weapon=($Char.weapon)
     $Title = (Build-Title $Level)
     Write-Host "================================================================="
@@ -323,15 +331,17 @@ Function Main {
     Write-Host "| Level $Level $Title"
     Write-Host "| Current Weapon: "
     Write-Host "| $Weapon"
+    Write-Host "| Experience: $EXP"
+    Write-Host "| Gold: $GLD"
     Write-Host "|"
-    Write-Host "| Stats:"
+    Write-Host "| Stats:"  
     Write-Host "| Strength:     $STR"
     Write-Host "| Dexterity:    $DEX"
     Write-Host "| Constitution: $CON"
     Write-Host "| Intelligence: $INT"
     Write-Host "| Wisdom:       $WIS"
     Write-Host "| Charisma:     $CHA"
-    Write-Host "| Experience:   $EXP"
+    Write-Host "|" 
     Write-Host "================================================================="
     Do-Quest $Level
 }
