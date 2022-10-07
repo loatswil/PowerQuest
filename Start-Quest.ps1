@@ -52,28 +52,17 @@ function Randomize-List {
    return $InputList | Get-Random -Count 1
 }
 
-function Spin-Up([string]$input_text = 'Press any key to continue... ') {
-    $spin="/-\|"
-    #$spin=".oO0Oo."
-    Write-Host "$input_text" -nonewline
+function Show-Progress {
+    param (
+        [string]$text='Waiting',
+        [int]$count=3
+        ) 
+    Write-Host "$text" -nonewline
     $i=0
-    $RandomSpin = Get-Random 15
-    while ($i -le $RandomSpin) {
-        Write-Host "`b$($spin.Substring($i++%$spin.Length)[0])" -nonewline
-        Start-Sleep -Milliseconds 100
-        }
-    #Write-Host ""
-}
-
-function Show-Progress([string]$input_text = 'Press any key to continue... ') {
-    Write-Host "$input_text" -nonewline
-    $i=0
-    $RandomSpin = 2
-    while ($i -le $RandomSpin) {
+    while ($i -le $count) {
         Write-Host "." -NoNewline;$i++
         Start-Sleep -Milliseconds 100
         }
-    #Write-Host ""
 }
 
 Function Build-Title {
@@ -224,11 +213,11 @@ Function Do-Quest {
     Foreach($N in $Numberset) {
         $Quest = (Get-Quest)
         Write-Host ""
-        Show-Progress "Current Quest: $Quest"
+        Show-Progress -text "Current Quest: $Quest" -count 0
         Write-Host ""
         For($T = 1; $T -le $N; $T++ ) {
             $Task = (Get-Task)
-            Show-Progress "     $Task"
+            Show-Progress -text "     $Task" -count 2
             Write-Host ""
             Start-Sleep -Milliseconds (Get-Random 100)
             }
