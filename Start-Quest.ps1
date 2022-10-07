@@ -91,7 +91,8 @@ Function Build-Title {
 }
 
 Function Roll-Stat {
-    $Stats = 1..4 | ForEach-Object {Get-Random -Minimum 1 -Maximum 7}
+    #$Stats = 1..4 | ForEach-Object {Get-Random -Minimum 1 -Maximum 7}
+    $Stats = (Get-AsciiDice -Amount 4)
     $Smallest = $Stats | Measure-Object -Minimum | Select-Object -ExpandProperty Minimum
     $Sum = $Stats | Measure-Object -Sum | Select-Object -ExpandProperty Sum
     $Stat = ($Sum - $Smallest)
@@ -217,6 +218,7 @@ Function Do-Quest {
     Param(
      [int]$CurrentLevel
     )
+    Write-Host "Rolling some quests..."
     $Exp = (Get-Random -Minimum 2 -Maximum 6)
     $Numberset = (Get-AsciiDice -Amount $Exp)
     Foreach($N in $Numberset) {
@@ -244,31 +246,31 @@ Function Do-Quest {
 Function Get-Stats {
     Clear-Host
     Write-Host "Rolling up your stats..."
-    Get-AsciiDice -Amount 4
+    
     $STR = (Roll-Stat)
-    Show-Progress "Rolling STR"
-    Write-Host "";Write-Host "$STR"
+    Write-Host "Strength: $STR"
     $Char['str']=$STR
+
     $DEX = (Roll-Stat)
-    Show-Progress "Rolling DEX"
-    Write-Host "";Write-Host "$DEX"
+    Write-Host "Dexterity: $DEX"
     $Char['dex']=$DEX
+    
     $CON = (Roll-Stat)
-    Show-Progress "Rolling CON"
-    Write-Host "";Write-Host "CON"
+    Write-Host "Constitution: $CON"
     $Char['con']=$CON
+    
     $INT = (Roll-Stat)
-    Show-Progress "Rolling INT"
-    Write-Host "";Write-Host "$INT"
+    Write-Host "Intelligence: $INT"
     $Char['int']=$INT
+    
     $WIS = (Roll-Stat)
-    Show-Progress "Rolling WIS"
-    Write-Host "";Write-Host "$WIS"
+    Write-Host "Wisdom: $WIS"
     $Char['wis']=$WIS
+    
     $CHA = (Roll-Stat)
-    Show-Progress "Rolling CHA"
-    Write-Host "";Write-Host "$CHA"
+    Write-Host "Charisma: $CHA"
     $Char['cha']=$CHA
+    
     $Char.align = (Get-Align)
     #Pause
     Start-Sleep 2
