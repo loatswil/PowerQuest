@@ -82,8 +82,9 @@ Function Build-Title {
     {$_ -in 20..39} {$Title = "IT Engineer"}
     {$_ -in 40..69} {$Title = "IT Engineer II"}
     {$_ -in 70..100} {$Title = "IT Architect"}
+    {$_ -in 101..1000} {$Title = "CIO"}
     }
-    return $Title
+    $Title
 }
 
 Function Roll-Stat {
@@ -92,19 +93,19 @@ Function Roll-Stat {
     $Smallest = $Stats | Measure-Object -Minimum | Select-Object -ExpandProperty Minimum
     $Sum = $Stats | Measure-Object -Sum | Select-Object -ExpandProperty Sum
     $Stat = ($Sum - $Smallest)
-    Write-Output $Stat
+    $Stat
 }
 
 function Get-Align {
     $Align = Randomize-List -InputList $Alignments
-    Write-Output "$Align"
+    "$Align"
 }
 
 function Get-Quest {
     $Action = Randomize-List -InputList $Actions
     $App = Randomize-List -InputList $Apps
     $Action = $Action.substring(0,1).toupper()+$Action.substring(1).tolower()
-    Write-Output "$Action $App"
+    "$Action $App"
 }
 
 function Get-Task {
@@ -112,7 +113,7 @@ function Get-Task {
     $Action = Randomize-List -InputList $Actions
     $Object = Randomize-List -InputList $Objects
     $Adverb = $Adverb.substring(0,1).toupper()+$Adverb.substring(1).tolower()
-    Write-Output "$Adverb $Action $Object"
+    "$Adverb $Action $Object"
 }
 
 Function Build-Gear {
@@ -122,7 +123,7 @@ Function Build-Gear {
     $Bonus = Randomize-List -InputList $Bonuses
     $Mod = $Mod.substring(0,1).toupper()+$Mod.substring(1).tolower()
     $Roll = (Get-Random -Minimum 1 -Maximum 9)
-    Write-Output "$Mod +$Roll $Mat $Item $Bonus"
+    "$Mod +$Roll $Mat $Item $Bonus"
 }
 
 function Get-Class {
@@ -314,7 +315,7 @@ function Get-AsciiDice {
     }
     Write-Host
     Write-Host (" -----   " * $NumberSet.Count)
-    Write-Output $NumberSet
+    $NumberSet
 }
 
 Function Main {
