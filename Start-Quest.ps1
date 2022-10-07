@@ -217,20 +217,20 @@ Function Do-Quest {
     Param(
      [int]$CurrentLevel
     )
-    $Exp = (Get-Random -Minimum 2 -Maximum 5)
-    for($Q = 1; $Q -le $Exp; $Q++) {
+    $Exp = (Get-Random -Minimum 2 -Maximum 6)
+    $Numberset = (Get-AsciiDice -Amount $Exp)
+    Foreach($N in $Numberset) {
         $Quest = (Get-Quest)
         Write-Host ""
         Show-Progress "Current Quest: $Quest"
-        Write-Host "";Write-Host ""
-        $RandomTask=(Get-Random -Minimum 2 -Maximum 10)
-        for($T = 1; $T -le $RandomTask; $T++ ) {
+        Write-Host ""
+        For($T = 1; $T -le $N; $T++ ) {
             $Task = (Get-Task)
-            Show-Progress "$Task"
+            Show-Progress "     $Task"
             Write-Host ""
             Start-Sleep -Milliseconds (Get-Random 100)
             }
-        }
+    }
     $Exp += $Char['Experience']
     $Char['Experience'] = $Exp
     $Gear = (Build-Gear)
@@ -243,6 +243,8 @@ Function Do-Quest {
 
 Function Get-Stats {
     Clear-Host
+    Write-Host "Rolling up your stats..."
+    Get-AsciiDice -Amount 4
     $STR = (Roll-Stat)
     Show-Progress "Rolling STR"
     Write-Host "";Write-Host "$STR"
@@ -270,6 +272,43 @@ Function Get-Stats {
     $Char.align = (Get-Align)
     #Pause
     Start-Sleep 2
+}
+
+function Get-AsciiDice {
+    Param
+  (
+      [parameter(Mandatory=$true,
+      ParameterSetName="Amount")]
+      [int]$Amount
+      )
+  
+    $NumberSet = (1..$Amount | foreach {Get-Random -Maximum 7 -Minimum 1})
+    $NumberSet | foreach { if ($_ -gt '6'){Write-Error -Message "Only supports digits 1-6" -ErrorAction Stop} }
+  
+    $d = @{
+        1 = '     ','  o  ','     '
+ 
+        2 = '   o ','     ',' o   '
+        
+        3 = ' o   ','  o  ','   o '
+        
+        4 = 'o   o','     ','o   o'
+        
+        5 = 'o   o','  o  ','o   o'
+        
+        6 = 'o   o','o   o','o   o'
+    }
+ 
+    Write-Host (" _____   " * $NumberSet.Count) -NoNewline
+    0..2 | ForEach-Object {
+        Write-Host
+        foreach($n in $NumberSet) {
+            Write-Host "|$($d[$n][$_])|  " -NoNewline
+        }
+    }
+    Write-Host
+    Write-Host (" -----   " * $NumberSet.Count)
+    Write-Output $NumberSet
 }
 
 Function Main {
