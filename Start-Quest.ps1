@@ -1,10 +1,13 @@
 ﻿$Char = @{}
-$Adverbs = @();$Actions = @();$Apps = @();$Objects = @()
+$Adverbs = @();$Actions = @();$Apps = @();$Objects = @();$Verbs = @()
 $Mods = @();$Mats = @();$Items = @();$Bonuses = @();$Gear = @()
 $Alignments = @()
 $Alignments = @('Lawful Good - White Hat','Neutral Good - Cream Hat','Chaotic Good - Beige Hat',
     'Lawful Neutral - Light-Grey Hat','True Neutral - Grey Hat','Chaotic Neutral - Dark-Grey Hat',
     'Lawful Evil - Light-Black Hat','Neutral Evil - Black Hat','Chaotic Evil - Suicide Hat') 
+$Verbs = @('compact','extract','hack','defrag','extend','request','update','upgrade','package','research',
+    'prepare','disable','search','calculate','manage','format','deploy','delete','restore','correlate','patch',
+    'compile')
 $Adverbs = @('quickly','painstakingly','randomly','slowly','literally','boldly','bravely','brightly',
     'cheerfully','deftly','devotedly','eagerly','elegantly','faithfully','gleefully','gracefully',
     'happily','honestly','innocently','kindly','merrily','obediently','perfectly','politely','powerfully',
@@ -102,10 +105,10 @@ function Get-Align {
 }
 
 function Get-Quest {
-    $Action = Randomize-List -InputList $Actions
+    $Verb = Randomize-List -InputList $Verbs
     $App = Randomize-List -InputList $Apps
-    $Action = $Action.substring(0,1).toupper()+$Action.substring(1).tolower()
-    "$Action $App"
+    $Verb = $Verb.substring(0,1).toupper()+$Verb.substring(1).tolower()
+    "$Verb $App"
 }
 
 function Get-Task {
