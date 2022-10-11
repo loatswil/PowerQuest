@@ -224,13 +224,13 @@ Function Do-Quest {
     Foreach($Q in $QuestRoll) {
         $Quest = (Get-Quest)
         Write-Host ""
-        Show-Progress -text "Current Quest: $Quest" -count 1
+        Show-Progress -text "Current Quest: $Quest" -count 0
         Write-Host ""
         For($T = 1; $T -le $Q; $T++ ) {
             $Task = (Get-Task)
             Show-Progress -text "     $Task" -count (Get-Random -Minimum 2 -Maximum 20)
             Write-Host ""
-            Start-Sleep -Milliseconds (Get-Random 100)
+            Start-Sleep -Milliseconds (Get-Random 300)
             }
     }
     Write-Host ""
