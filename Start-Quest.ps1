@@ -1,6 +1,12 @@
-﻿$Char = @{}
+﻿$Char = @{};$Monster1 = @{}
 $Adverbs = @();$Actions = @();$Apps = @();$Objects = @();$Verbs = @()
 $Mods = @();$Mats = @();$Items = @();$Bonuses = @();$Gear = @()
+$Phrases = @();$Adjectives = @();$MonsterRaces = @();$Mobs = @();$Hits = @()
+$Hits = @('hits','tickles','pokes','bonks','slaps','crushes')
+$Phrases = @('with a bonecrushing sound','in your eye','on the back of your head')
+$Adjectives = @('slimy','digital','electronic','green')
+$MonsterRaces = @('reptillian','cyber','vitual')
+$Mobs = @('keyboard','mouse','SCSI cable','cell phone','iPad')
 $Alignments = @()
 $Alignments = @('Lawful Good - White Hat','Neutral Good - Cream Hat','Chaotic Good - Beige Hat',
     'Lawful Neutral - Light-Grey Hat','True Neutral - Grey Hat','Chaotic Neutral - Dark-Grey Hat',
@@ -63,7 +69,7 @@ function Show-Progress {
     Write-Host "$text" -nonewline
     for($i=1;$i -le $count;$i++) {
         Write-Host "." -NoNewline
-        Start-Sleep -Milliseconds 100
+        Start-Sleep -Milliseconds 200
         }
 }
 
@@ -214,43 +220,6 @@ function Write-Menu {
     Write-Information "" -InformationAction Continue
 }
 
-Function Do-Quest {
-    Param(
-     [int]$CurrentLevel
-    )
-    Write-Host "Rolling some quests..."
-    $Exp = (Get-Random -Minimum 2 -Maximum 6)
-    $QuestRoll = (Get-AsciiDice -Amount $Exp)
-    Foreach($Q in $QuestRoll) {
-        $Quest = (Get-Quest)
-        Write-Host ""
-        Show-Progress -text "Current Quest: $Quest" -count 0
-        Write-Host ""
-        For($T = 1; $T -le $Q; $T++ ) {
-            $Task = (Get-Task)
-            Show-Progress -text "     $Task" -count (Get-Random -Minimum 2 -Maximum 20)
-            Write-Host ""
-            Start-Sleep -Milliseconds (Get-Random 300)
-            }
-    }
-    Write-Host ""
-    $GLD = (Get-Random -Minimum 0 -Maximum $Exp)
-    Write-Host "Gold earned: $GLD"
-    $Char.gold += $GLD
-    Write-Host "Experience gained: $Exp"
-    $Exp += $Char['Experience']
-    $Char.Experience = $Exp
-    if ((Get-Random -Minimum 1 -Maximum 100) -le 25) {
-        $Gear = Build-Gear
-        $Char['Weapon'] = $Gear
-        Write-Host "New loot: $Gear"
-        }
-    if ($Exp -ge ($CurrentLevel * 10)){
-        $Char.align = (Get-Align)
-        $Char.Level++
-        }
-}
-
 Function Get-Stats {
     Clear-Host
     Write-Host "Rolling up your stats..."
@@ -321,8 +290,86 @@ function Get-AsciiDice {
     $NumberSet
 }
 
-Function Main {
+Function Attack-Roll {
+    param (
+            [string]$Subject='you'
+            ) 
+    $Hit = Randomize-List -InputList $Hits
+    $Phrase = Randomize-List -InputList $Phrases
+    "$Hit $Subject $Phrase"
+    }
+
+function Get-Mob {
+    $Adjective = Randomize-List -InputList $Adjectives
+    $MonsterRace = Randomize-List -InputList $MonsterRaces
+    $Mob = Randomize-List -InputList $Mobs
+    $Adjective = $Adjective.substring(0,1).toupper()+$Adjective.substring(1).tolower()
+    "$Adjective $MonsterRace $Mob"
+    $Monster1['adjective']=$Adjective
+    $Monster1['race']=$MonsterRace
+    $Monster1['mob']=$Mob
+    }
+
+Function Fight {
+    if ((Get-Random -Minimum 1 -Maximum 100) -le 25) {
+        Clear-Host
+        Main-Menu
+        $NumMobs = (Get-Random -Minimum 1 -Maximum 5)
+        $BigMob = (Get-Mob)
+        Write-Host "You are interrupted by $NumMobs $BigMob"
+        $Rand = (Get-Random -Minimum 2 -Maximum 10)
+        $Weapon=($Char.weapon)
+        for ($mob = 1; $mob -le $Rand; $mob++ ) {
+            $Attack = (Attack-Roll)
+            Write-Host "     $BigMob $Attack" -NoNewline;Show-Progress "" (Get-Random 10)
+            Write-Host ""
+                for ($you = 1; $you -le 1; $you++ ){
+                    Write-Host "     You crush $BigMob with your $Weapon" -NoNewline;Show-Progress "" (Get-Random 10)
+                    Write-Host ""
+                    }
+            Start-Sleep -Milliseconds 500
+        }
+        $Gear = Build-Gear
+        $Char['Weapon'] = $Gear
+        Write-Host "New loot: $Gear"
+        $GLD = (Get-Random -Minimum 0 -Maximum 20)
+        Write-Host "Gold earned: $GLD"
+        $Char.gold += $GLD
+    }
+}
+
+Function Do-Quest {
+    Param(
+     [int]$CurrentLevel
+    )
     Clear-Host
+    Main-Menu
+    Write-Host "Rolling some quests..."
+    $Exp = (Get-Random -Minimum 2 -Maximum 6)
+    $QuestRoll = (Get-AsciiDice -Amount $Exp)
+    Foreach($Q in $QuestRoll) {
+        $Quest = (Get-Quest)
+        Write-Host ""
+        Show-Progress -text "Current Quest: $Quest" -count 0
+        Write-Host ""
+        For($T = 1; $T -le $Q; $T++ ) {
+            $Task = (Get-Task)
+            Show-Progress -text "     $Task" -count (Get-Random -Minimum 2 -Maximum 20)
+            Write-Host ""
+            Start-Sleep -Milliseconds (Get-Random 300)
+            }
+    }
+    Write-Host ""
+    Write-Host "Experience gained: $Exp"
+    $Exp += $Char['Experience']
+    $Char.Experience = $Exp
+    if ($Exp -ge ($CurrentLevel * 10)){
+        $Char.align = (Get-Align)
+        $Char.Level++
+        }
+}
+
+Function Main-Menu {
     $Name=($Char.name);$Level=($Char.level);$Race=($Char.race)
     $Class=($Char.class);$STR=($Char.str);$Con=($Char.con);$EXP=($Char.experience)
     $INT=($Char.int);$DEX=($Char.dex);$WIS=($Char.wis);$CHA=($Char.cha);$GLD=($Char.gold)
@@ -347,11 +394,12 @@ Function Main {
     Write-Host "| Charisma:     $CHA"
     Write-Host "|" 
     Write-Host "================================================================="
-    Do-Quest $Level
 }
 
+
 if (!($Char.level)){$Char.level = 1}
-if (!($Char.name)){$Char.name = "Wilgrin"}
+if (!($Char.name)){Char.name = "Wilgrin"}
+$Char.weapon = "stick"
 #if (!($Name)){$Name = "Gwendoveer"}
 
 Write-Menu
@@ -364,9 +412,11 @@ Get-Race
 Get-Stats
 
 do {
-    Main
+    Do-Quest $Level
+    Fight
     Start-Sleep 5
     $wsh = New-Object -ComObject WScript.Shell
     $wsh.SendKeys('+{F15}')
+    #[console]::beep(500,300)
 }
 until ($Cont -eq 'n')
