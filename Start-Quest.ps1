@@ -197,7 +197,7 @@ Function Get-Stats {
     Write-Host "Charisma: $CHA"
     $Char['cha']=$CHA
     
-    Start-Sleep -Milliseconds 700
+    Start-Sleep -Milliseconds 900
 }
 
 function Get-AsciiDice {
@@ -348,16 +348,17 @@ Function Main-Menu {
 
 $Char.weapon = "stick"
 $Char.item = "stick"
+$Char.level = 1
 
 Write-Menu
-Show-Progress "" -count 3;Get-Name
-Show-Progress "" -count 3;Get-Race
-Show-Progress "" -count 3;Get-Class
-Show-Progress "" -count 3;Get-Align
-Start-Sleep -Milliseconds 700
+Write-Host "Name" -NoNewline;Show-Progress "" -count 3;Get-Name
+Write-Host "Race" -NoNewline;Show-Progress "" -count 3;Get-Race
+Write-Host "Class" -NoNewline;Show-Progress "" -count 3;Get-Class
+Write-Host "Alignment" -NoNewline;Show-Progress "" -count 3;Get-Align
+Start-Sleep -Milliseconds 900
 Get-Stats
 
-do {
+While(1) {
     Do-Quest $Level
     Fight
     Start-Sleep -Milliseconds 700
@@ -365,4 +366,3 @@ do {
     $wsh.SendKeys('+{F15}')
     #[console]::beep(500,300)
 }
-until ($Cont -eq 'n')
