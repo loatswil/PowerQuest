@@ -7,7 +7,7 @@ $MobHits = @('hits','tickles','pokes','bonks','slaps','crushes','stabs',
 $YourHits = @('hit','smash','bonk','slap','crush','stab',
     'punch','destroy','obliterate')
 $Phrases = @('with a bonecrushing sound','in your eye','on the back of your head',
-    'with an old keyboard','with a terminal','in the face')
+    'with an old keyboard','with a terminal','in the face','really hard')
 $Adjectives = @('digital','electronic','green','smoke-stained','plastic',
     'grungy','virtual','cloud-based','shiny','dingy','brand new','state-of-the-art')
 $MonsterRaces = @('IBM','Compaq','Dell','Apple','Aruba','Juniper','Cisco',
@@ -76,15 +76,7 @@ function Show-Progress {
     Write-Host "$text" -nonewline
     for($i=1;$i -le $count;$i++) {
         Write-Host "." -NoNewline
-        Start-Sleep -Milliseconds 500
-        }
-}
-
-function Show-Bar {
-    param ([int]$count=3) 
-    For($i=1;$i -le $count;$i++) {
-        Write-Host "o" -NoNewline
-        Start-Sleep -Milliseconds 100
+        Start-Sleep -Milliseconds 300
         }
 }
 
@@ -110,11 +102,6 @@ Function Roll-Stat {
     $Sum = $Stats | Measure-Object -Sum | Select-Object -ExpandProperty Sum
     $Stat = ($Sum - $Smallest)
     $Stat
-}
-
-function Get-Align {
-    $Align = Randomize-List -InputList $Alignments
-    "$Align"
 }
 
 function Get-Quest {
@@ -145,76 +132,26 @@ Function Build-Gear {
 
 function Get-Class {
     $Class = Randomize-List -InputList $Classes
-    Write-Output "$Class"
     $Char.class = $Class
-}
-
-Function Choose-Class {
-    param (
-        [string]$Title = 'Choose your class:'
-    )
-    Clear-Host
-    Write-Host "$Title"
-    Write-Host "[D]ruid (default)"
-    Write-Host "[M]age"
-    Write-Host "[W]arrior"
-    Write-Host "[R]anger"
-    Write-Host "M[O]nk"
-    Write-Host "[C]leric"
-    Write-Host "[P]aladin"
-    Write-Host ""
-    $Class = Read-Host "Choose your class"
-    $Class = switch ($Class) {
-    D {'Druid'}
-    M {'Mage'}
-    W {'Warrior'}
-    R {'Ranger'}
-    O {'Monk'}
-    C {'Cleric'}
-    P {'Paladin'}
-    default {'Druid'}
-    }
-    $Char['Class']=$Class
+    Write-Output "$Class"
 }
 
 function Get-Race {
     $Race = Randomize-List -InputList $Races
-    Write-Output "$Race"
     $Char.race = $Race
-}
-
-function Choose-Race {
-    param (
-        [string]$Title = 'Choose your race:'
-    )
-    Clear-Host
-    Write-Host "$Title"
-    Write-Host "[H]uman (default)"
-    Write-Host "[E]lf"
-    Write-Host "[D]warf"
-    Write-Host "Hob[B]it"
-    Write-Host "[O]rc"
-    Write-Host "[G]oblin"
-    Write-Host ""
-    $Race = Read-Host "Choose your race"
-    $Race = switch ($Race ) {
-    H {'Human'}
-    E {'Elf'}
-    D {'Dwarf'}
-    B {'Hobbit'}
-    O {'Orc'}
-    G {'Goblin'}
-    default {'Human'}
-    }
-    $Char['Race']=$Race
+    Write-Output "$Race"
 }
 
 Function Get-Name {
-    $Char['name']=($env:username)
+    $Name = ($env:username)
+    $Char['name']=$Name
+    Write-Output $Name
 }
 
-Function Choose-Name {
-    $Name = Read-Host "Character name?"
+function Get-Align {
+    $Align = Randomize-List -InputList $Alignments
+    $Char.align = $Align
+    Write-Output $Align
 }
 
 function Write-Menu {
@@ -225,6 +162,9 @@ function Write-Menu {
     Write-Information "* oO[-Welcome to PowerQuest-]Oo *" -InformationAction Continue
     Write-Information "*                               *" -InformationAction Continue
     Write-Information "*********************************" -InformationAction Continue
+    Write-Information "" -InformationAction Continue
+    Show-Progress "Sensing your virtual self" -count 3
+    Write-Information "" -InformationAction Continue
     Write-Information "" -InformationAction Continue
 }
 
@@ -257,9 +197,7 @@ Function Get-Stats {
     Write-Host "Charisma: $CHA"
     $Char['cha']=$CHA
     
-    $Char.align = (Get-Align)
-    #Pause
-    Start-Sleep 2
+    Start-Sleep -Milliseconds 700
 }
 
 function Get-AsciiDice {
@@ -366,7 +304,7 @@ Function Do-Quest {
             $Task = (Get-Task)
             Show-Progress -text "     $Task" -count 3
             Write-Host ""
-            Start-Sleep -Milliseconds (Get-Random 300)
+            Start-Sleep -Milliseconds 300
             }
     }
     Write-Host ""
@@ -406,26 +344,21 @@ Function Main-Menu {
     Write-Host "================================================================="
 }
 
-
-if (!($Char.level)){$Char.level = 1}
-if (!($Char.name)){Char.name = "Wilgrin"}
 $Char.weapon = "stick"
 $Char.item = "stick"
-#if (!($Name)){$Name = "Gwendoveer"}
 
 Write-Menu
-#Choose-Name
-Get-Name
-#Choose-Class
-Get-Class
-#Choose-Race
-Get-Race
+Show-Progress "" -count 3;Get-Name
+Show-Progress "" -count 3;Get-Race
+Show-Progress "" -count 3;Get-Class
+Show-Progress "" -count 3;Get-Align
+Start-Sleep -Milliseconds 700
 Get-Stats
 
 do {
     Do-Quest $Level
     Fight
-    Start-Sleep 5
+    Start-Sleep -Milliseconds 700
     $wsh = New-Object -ComObject WScript.Shell
     $wsh.SendKeys('+{F15}')
     #[console]::beep(500,300)
