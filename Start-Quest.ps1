@@ -282,6 +282,7 @@ Function Fight {
         Write-Host "New loot: $Gear"
         $GLD = (Get-Random -Minimum 0 -Maximum 20)
         Write-Host "Gold earned: $GLD"
+        Start-Sleep -Milliseconds 900
         $Char.gold += $GLD
     }
 }
@@ -309,6 +310,7 @@ Function Do-Quest {
     }
     Write-Host ""
     Write-Host "Experience gained: $Exp"
+    Start-Sleep -Milliseconds 900
     $Exp += $Char['Experience']
     $Char.Experience = $Exp
     if ($Exp -ge ($CurrentLevel * 10)){
