@@ -1,13 +1,20 @@
 ﻿$Char = @{};$Monster1 = @{}
 $Adverbs = @();$Actions = @();$Apps = @();$Objects = @();$Verbs = @()
-$Mods = @();$Mats = @();$Items = @();$Bonuses = @();$Gear = @()
-$Phrases = @();$Adjectives = @();$MonsterRaces = @();$Mobs = @();$Hits = @()
-$Hits = @('hits','tickles','pokes','bonks','slaps','crushes')
-$Phrases = @('with a bonecrushing sound','in your eye','on the back of your head')
-$Adjectives = @('slimy','digital','electronic','green')
-$MonsterRaces = @('reptillian','cyber','vitual')
-$Mobs = @('keyboard','mouse','SCSI cable','cell phone','iPad')
-$Alignments = @()
+$Mods = @();$Mats = @();$Items = @();$Bonuses = @();$Gear = @();$Alignments = @()
+$Phrases = @();$Adjectives = @();$MonsterRaces = @();$Mobs = @();$MobHits = @();$YourHits = @()
+$MobHits = @('hits','tickles','pokes','bonks','slaps','crushes','stabs',
+    'punches')
+$YourHits = @('hit','smash','bonk','slap','crush','stab',
+    'punch','destroy','obliterate')
+$Phrases = @('with a bonecrushing sound','in your eye','on the back of your head',
+    'with an old keyboard','with a terminal','in the face')
+$Adjectives = @('digital','electronic','green','smoke-stained','plastic',
+    'grungy','virtual','cloud-based','shiny','dingy','brand new','state-of-the-art')
+$MonsterRaces = @('IBM','Compaq','Dell','Apple','Aruba','Juniper','Cisco',
+    'Gateway 2000','Mac','Microtech','Logitech','Polycom','Poly')
+$Mobs = @('keyboard','mouse','SCSI cable','cell phone','iPad','switch',
+    'router','PC','laptop','monitor','UPS','DOT Matrix Printer','Laser Printer',
+	'flatbed scanner','backup tape','Phone')
 $Alignments = @('Lawful Good - White Hat','Neutral Good - Cream Hat','Chaotic Good - Beige Hat',
     'Lawful Neutral - Light-Grey Hat','True Neutral - Grey Hat','Chaotic Neutral - Dark-Grey Hat',
     'Lawful Evil - Light-Black Hat','Neutral Evil - Black Hat','Chaotic Evil - Suicide Hat') 
@@ -69,7 +76,7 @@ function Show-Progress {
     Write-Host "$text" -nonewline
     for($i=1;$i -le $count;$i++) {
         Write-Host "." -NoNewline
-        Start-Sleep -Milliseconds 200
+        Start-Sleep -Milliseconds 500
         }
 }
 
@@ -132,6 +139,7 @@ Function Build-Gear {
     $Bonus = Randomize-List -InputList $Bonuses
     $Mod = $Mod.substring(0,1).toupper()+$Mod.substring(1).tolower()
     $Roll = (Get-Random -Minimum 1 -Maximum 9)
+	$Char.item = $Item
     "$Mod +$Roll $Mat $Item $Bonus"
 }
 
@@ -222,7 +230,8 @@ function Write-Menu {
 
 Function Get-Stats {
     Clear-Host
-    Write-Host "Rolling up your stats..."
+    Show-Progress "Rolling up your stats" -numbers 3
+	Write-Host ""
     
     $STR = (Roll-Stat)
     Write-Host "Strength: $STR"
@@ -290,13 +299,13 @@ function Get-AsciiDice {
     $NumberSet
 }
 
-Function Attack-Roll {
+Function MobAttack-Roll {
     param (
             [string]$Subject='you'
             ) 
-    $Hit = Randomize-List -InputList $Hits
+    $MobHit = Randomize-List -InputList $MobHits
     $Phrase = Randomize-List -InputList $Phrases
-    "$Hit $Subject $Phrase"
+    "$MobHit $Subject $Phrase"
     }
 
 function Get-Mob {
@@ -314,17 +323,18 @@ Function Fight {
     if ((Get-Random -Minimum 1 -Maximum 100) -le 25) {
         Clear-Host
         Main-Menu
-        $NumMobs = (Get-Random -Minimum 1 -Maximum 5)
         $BigMob = (Get-Mob)
-        Write-Host "You are interrupted by $NumMobs $BigMob"
+        Write-Host "You are interrupted by a $BigMob"
         $Rand = (Get-Random -Minimum 2 -Maximum 10)
-        $Weapon=($Char.weapon)
+        $Item = $Char.item
+		$MobMob = ($Monster1.mob)
         for ($mob = 1; $mob -le $Rand; $mob++ ) {
-            $Attack = (Attack-Roll)
-            Write-Host "     $BigMob $Attack" -NoNewline;Show-Progress "" (Get-Random 10)
+            $MobAttack = (MobAttack-Roll)
+            Show-Progress -text "     The $MobMob $MobAttack" -count 3
             Write-Host ""
                 for ($you = 1; $you -le 1; $you++ ){
-                    Write-Host "     You crush $BigMob with your $Weapon" -NoNewline;Show-Progress "" (Get-Random 10)
+					$YourAttack = (Randomize-List -inputlist $YourHits)
+                    Show-Progress -text "     You $YourAttack $MobMob with your $Item" -count 3
                     Write-Host ""
                     }
             Start-Sleep -Milliseconds 500
@@ -354,7 +364,7 @@ Function Do-Quest {
         Write-Host ""
         For($T = 1; $T -le $Q; $T++ ) {
             $Task = (Get-Task)
-            Show-Progress -text "     $Task" -count (Get-Random -Minimum 2 -Maximum 20)
+            Show-Progress -text "     $Task" -count 3
             Write-Host ""
             Start-Sleep -Milliseconds (Get-Random 300)
             }
@@ -400,6 +410,7 @@ Function Main-Menu {
 if (!($Char.level)){$Char.level = 1}
 if (!($Char.name)){Char.name = "Wilgrin"}
 $Char.weapon = "stick"
+$Char.item = "stick"
 #if (!($Name)){$Name = "Gwendoveer"}
 
 Write-Menu
