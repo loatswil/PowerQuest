@@ -80,19 +80,48 @@ function Show-Progress {
         }
 }
 
-Function Build-Title {
+Function Get-Title {
     Param(
          [int]$InputLevel
        )
     Switch ($InputLevel) {
-    {$_ -in 1..9} {$Title = "Help Desk Monkey"}
-    {$_ -in 10..19} {$Title = "System Administrator"}
-    {$_ -in 20..39} {$Title = "IT Engineer"}
-    {$_ -in 40..69} {$Title = "IT Engineer II"}
-    {$_ -in 70..100} {$Title = "IT Architect"}
-    {$_ -in 101..1000} {$Title = "CIO"}
+    {$_ -in 1..4} {$Title = "Help Desk Monkey"}
+    {$_ -in 5..8} {$Title = "System Administrator"}
+    {$_ -in 9..12} {$Title = "IT Engineer"}
+    {$_ -in 13..16} {$Title = "IT Engineer II"}
+    {$_ -in 17..19} {$Title = "IT Architect"}
+    {$_ -in 20..1000} {$Title = "CIO"}
     }
     $Title
+}
+
+Function Get-Level {
+    Param(
+         [int]$Exp
+       )
+    Switch ($Exp) {
+    {$_ -in 0..299} {$Level = 1}
+    {$_ -in 300..899} {$Level = 2}
+    {$_ -in 900..2699} {$Level = 3}
+    {$_ -in 2700..6499} {$Level = 4}
+    {$_ -in 6500..139999} {$Level = 5}
+    {$_ -in 14000..22999} {$Level = 6}
+    {$_ -in 23000..33999} {$Level = 7}
+    {$_ -in 34000..47999} {$Level = 8}
+    {$_ -in 48000..63999} {$Level = 9}
+    {$_ -in 64000..84999} {$Level = 10}
+    {$_ -in 85000..99999} {$Level = 11}
+    {$_ -in 100000..119999} {$Level = 12}
+    {$_ -in 120000..139999} {$Level = 13}
+    {$_ -in 140000..164999} {$Level = 14}
+    {$_ -in 165000..194999} {$Level = 15}
+    {$_ -in 195000..224999} {$Level = 16}
+    {$_ -in 225000..264999} {$Level = 17}
+    {$_ -in 265000..304999} {$Level = 18}
+    {$_ -in 305000..354999} {$Level = 19}
+    {$_ -in 355000..1000000} {$Level = 20}
+    }
+    $Level
 }
 
 Function Roll-Stat {
@@ -264,7 +293,7 @@ Function Fight {
         $BigMob = (Get-Mob)
         Write-Host "You are interrupted by a $BigMob"
         $Rand = (Get-Random -Minimum 2 -Maximum 10)
-        $Item = $Char.item
+        $Weapon = $Char.weapon
 		$MobMob = ($Monster1.mob)
         for ($mob = 1; $mob -le $Rand; $mob++ ) {
             $MobAttack = (MobAttack-Roll)
@@ -272,7 +301,7 @@ Function Fight {
             Write-Host ""
                 for ($you = 1; $you -le 1; $you++ ){
 					$YourAttack = (Randomize-List -inputlist $YourHits)
-                    Show-Progress -text "     You $YourAttack $MobMob with your $Item" -count 3
+                    Show-Progress -text "     You $YourAttack $MobMob with your $Weapon" -count 3
                     Write-Host ""
                     }
             Start-Sleep -Milliseconds 500
@@ -284,6 +313,9 @@ Function Fight {
         Write-Host "Gold earned: $GLD"
         Start-Sleep -Milliseconds 900
         $Char.gold += $GLD
+        $NewExp = ($Rand * 10)
+        Write-Host "Experience earned: $NewExp"
+        $Char.experience = ($Char.experience += $NewExp)
     }
 }
 
@@ -294,8 +326,8 @@ Function Do-Quest {
     Clear-Host
     Main-Menu
     Write-Host "Rolling some quests..."
-    $Exp = (Get-Random -Minimum 2 -Maximum 6)
-    $QuestRoll = (Get-AsciiDice -Amount $Exp)
+    $Quests = (Get-Random -Minimum 2 -Maximum 6)
+    $QuestRoll = (Get-AsciiDice -Amount $Quests)
     Foreach($Q in $QuestRoll) {
         $Quest = (Get-Quest)
         Write-Host ""
@@ -309,22 +341,20 @@ Function Do-Quest {
             }
     }
     Write-Host ""
+    $Exp = ($Quests * 50)
     Write-Host "Experience gained: $Exp"
+    $Char.experience = ($Char.experience += $Exp)
     Start-Sleep -Milliseconds 900
-    $Exp += $Char['Experience']
-    $Char.Experience = $Exp
-    if ($Exp -ge ($CurrentLevel * 10)){
-        $Char.align = (Get-Align)
-        $Char.Level++
-        }
-}
+    }
 
 Function Main-Menu {
-    $Name=($Char.name);$Level=($Char.level);$Race=($Char.race)
-    $Class=($Char.class);$STR=($Char.str);$Con=($Char.con);$EXP=($Char.experience)
+    $Char.level = (Get-Level $Char.experience)
+    $Char.title = (Get-Title $Char.level)
+    $Name=($Char.name);$Race=($Char.race)
+    $Class=($Char.class);$Level = $Char.level;$STR=($Char.str);$Con=($Char.con);$EXP=($Char.experience)
     $INT=($Char.int);$DEX=($Char.dex);$WIS=($Char.wis);$CHA=($Char.cha);$GLD=($Char.gold)
     $Alignment=$Char.align;$Weapon=($Char.weapon)
-    $Title = (Build-Title $Level)
+    $Title = ($Char.title)
     Write-Host "================================================================="
     Write-Host "|"
     Write-Host "| Welcome $Name, $Race $Class"
@@ -346,9 +376,8 @@ Function Main-Menu {
     Write-Host "================================================================="
 }
 
-$Char.weapon = "stick"
-$Char.item = "stick"
-$Char.level = 1
+$Char.experience = 0
+$Char.weapon = "Stick"
 
 Write-Menu
 Write-Host "Name" -NoNewline;Show-Progress "" -count 3;Get-Name
