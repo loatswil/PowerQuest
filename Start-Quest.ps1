@@ -1,4 +1,6 @@
-﻿$Char = @{};$Monster1 = @{}
+﻿$Char = @{}
+$Char.Weapon = @{}
+$Monster1 = @{}
 $Adverbs = @();$Actions = @();$Apps = @();$Objects = @();$Verbs = @()
 $Mods = @();$Mats = @();$Items = @();$Bonuses = @();$Gear = @();$Alignments = @()
 $Phrases = @();$Adjectives = @();$MonsterRaces = @();$Mobs = @();$MobHits = @();$YourHits = @()
@@ -53,7 +55,7 @@ $Mods = @('deadly','magical','digital','electronic','binary',
 $Mats = @('golden','platinum','silver','iron','mithril','emerald','ruby',
     'diamond','steel','bronze','copper','saphire')
 $Items = @('visor','goggles','t-shirt','cell phone','USB stick','hard drive','CAT-5 cable','headset',
-    'keyboard','mouse','monitor','disk','floppy disk')
+    'keyboard','mouse','monitor','compact disk','floppy disk')
 $Bonuses = @('of greping','of editing','of application slaying','of Cloud slaying','of database monitoring',
     'of spreadsheet sorting','of log searching','of portal slaying','of Azure','of ticket closing','of event parsing')
 $Classes = @('Druid','Mage','Warrior',
@@ -148,15 +150,20 @@ function Get-Task {
     "$Adverb $Action $Object"
 }
 
-Function Build-Gear {
+Function Build-Weapon {
+    $Char.Weapon = @{}
     $Mod = Randomize-List -InputList $Mods
     $Mat = Randomize-List -InputList $Mats
     $Item = Randomize-List -InputList $Items
     $Bonus = Randomize-List -InputList $Bonuses
     $Mod = $Mod.substring(0,1).toupper()+$Mod.substring(1).tolower()
-    $Roll = (Get-Random -Minimum 1 -Maximum 9)
-	$Char.item = $Item
-    "$Mod +$Roll $Mat $Item $Bonus"
+    $Roll = +(Get-Random -Minimum 1 -Maximum 9)
+	$Char.weapon.roll = $Roll
+    $Char.weapon.mod = $Mod
+    $Char.weapon.mat = $Mat
+    $Char.weapon.item = $Item
+    $Char.weapon.bonus = $Bonus
+    $Char.weapon.weapon = "$Mod +$Roll $Mat $Item $Bonus"
 }
 
 function Get-Class {
@@ -293,7 +300,7 @@ Function Fight {
         $BigMob = (Get-Mob)
         Write-Host "You are interrupted by a $BigMob"
         $Rand = (Get-Random -Minimum 2 -Maximum 10)
-        $Weapon = $Char.weapon
+        $Weapon = $Char.Weapon.item
 		$MobMob = ($Monster1.mob)
         for ($mob = 1; $mob -le $Rand; $mob++ ) {
             $MobAttack = (MobAttack-Roll)
@@ -306,16 +313,16 @@ Function Fight {
                     }
             Start-Sleep -Milliseconds 500
         }
-        $Gear = Build-Gear
-        $Char['Weapon'] = $Gear
-        Write-Host "New loot: $Gear"
+        Build-Weapon
+        $NewWeapon = $Char.Weapon.weapon
+        Write-Host "New loot: $NewWeapon"
         $GLD = (Get-Random -Minimum 0 -Maximum 20)
         Write-Host "Gold earned: $GLD"
-        Start-Sleep -Milliseconds 900
         $Char.gold += $GLD
         $NewExp = ($Rand * 10)
         Write-Host "Experience earned: $NewExp"
         $Char.experience = ($Char.experience += $NewExp)
+        Start-Sleep -Milliseconds 900
     }
 }
 
@@ -353,7 +360,7 @@ Function Main-Menu {
     $Name=($Char.name);$Race=($Char.race)
     $Class=($Char.class);$Level = $Char.level;$STR=($Char.str);$Con=($Char.con);$EXP=($Char.experience)
     $INT=($Char.int);$DEX=($Char.dex);$WIS=($Char.wis);$CHA=($Char.cha);$GLD=($Char.gold)
-    $Alignment=$Char.align;$Weapon=($Char.weapon)
+    $Alignment=$Char.align;$Weapon=($Char.weapon.weapon)
     $Title = ($Char.title)
     Write-Host "================================================================="
     Write-Host "|"
@@ -377,7 +384,7 @@ Function Main-Menu {
 }
 
 $Char.experience = 0
-$Char.weapon = "Stick"
+Build-Weapon
 
 Write-Menu
 Write-Host "Name" -NoNewline;Show-Progress "" -count 3;Get-Name
