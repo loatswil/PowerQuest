@@ -34,11 +34,3 @@ Screenshot:
 | Intelligence: 14
 | Wisdom:       10
 | Charisma:     17
-|
-=================================================================
-Rolling some quests...
- _____    _____    _____    _____
-|o   o|  |o   o|  |o   o|  | o   |
-|o   o|  |o   o|  |  o  |  |  o  |
-|o   o|  |o   o|  |o   o|  |   o |
- -----    -----    -----    -----
