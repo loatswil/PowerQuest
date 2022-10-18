@@ -1,0 +1,41 @@
+=================================================================
+|
+| Welcome wal, Dwarf Paladin
+| True Neutral - Grey Hat
+| Level 6 System Administrator
+| Weapon:
+| Digital +7 wooden web cam of database monitoring
+| Armor:
+|    Silver visor
+|    High tech spaulders
+|    Cyber handwarmers
+|    Diamond hoodie
+|    Leather arm guards
+|    Wooden money clip
+|    High tech Nike
+| Experience: 19700
+| Gold: 250
+|
+| Stats:
+| Strength:     16
+| Dexterity:    16
+| Constitution: 11
+| Intelligence: 14
+| Wisdom:       10
+| Charisma:     17
+|
+=================================================================
+Rolling some quests...
+ _____    _____    _____    _____    _____
+|o   o|  |     |  |   o |  |o   o|  |o   o|
+|o   o|  |  o  |  |     |  |  o  |  |o   o|
+|o   o|  |     |  | o   |  |o   o|  |o   o|
+ -----    -----    -----    -----    -----
+
+Current Quest: Compact Net Neutrality
+     Vociferously hacking firewall rules...
+     Nightly deleting floppy disks...
+     Warmly searching folders...
+     Literally searching CAT5 cables...
+     Uproariously packaging email...
+     Regularly extracting memory...
