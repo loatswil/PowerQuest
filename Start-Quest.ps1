@@ -1,8 +1,9 @@
-﻿$Char = @{}
+﻿$Char = @{};$Char.Weapon = @{};$Char.Helmet = @{};$Char.Shoulders = @{};$Char.Gloves = @{}
+$Char.Chest = @{};$Char.Arms = @{};$Char.Legs = @{};$Char.Feet = @{}
 $Char.Weapon = @{}
 $Monster1 = @{}
 $Adverbs = @();$Actions = @();$Apps = @();$Objects = @();$Verbs = @()
-$Mods = @();$Mats = @();$Items = @();$Bonuses = @();$Gear = @();$Alignments = @()
+$Mods = @();$Mats = @();$Items = @();$Bonuses = @();$Gear = @();$Alignments = @();$Helmets = @()
 $Phrases = @();$Adjectives = @();$MonsterRaces = @();$Mobs = @();$MobHits = @();$YourHits = @()
 $MobHits = @('hits','tickles','pokes','bonks','slaps','crushes','stabs',
     'punches')
@@ -52,10 +53,24 @@ $Objects = @('the database','directories','servers','websites','folders','email'
     'CAT5 cables','spreadsheets')
 $Mods = @('deadly','magical','digital','electronic','binary',
     'caffeinated')
-$Mats = @('golden','platinum','silver','iron','mithril','emerald','ruby',
+$Mats = @('wooden','leather','golden','platinum','silver','iron','mithril','emerald','ruby',
     'diamond','steel','bronze','copper','saphire')
-$Items = @('visor','goggles','t-shirt','cell phone','USB stick','hard drive','CAT-5 cable','headset',
+$Weapons = @('pen','pencil','pager','cell phone','USB stick','hard drive','CAT-5 cable','power cord',
     'keyboard','mouse','monitor','compact disk','floppy disk')
+$Helmets = @('fedora','visor','goggles','skull cap','baseball hat',
+    'scarf','coif','mask','beanie','cowboy hat','beret','top hat','turban')
+$Shoulders = @('spaulders','pauldrons','wings','shoulders',
+    'cloak')
+$Gloves = @('gauntlets','gloves','cuffs','braclet',
+    'prosthetic finger','ring','pinkie ring')
+$Chests = @('chest guard','t-shirt','hoodie','tuxedo coat',
+    'cuirass','hauberk')
+$Arms = @('vambraces','bracers','arm guards','compression sleeves',
+    'cuff links')
+$Legs = @('greaves','jeans','compression socks','leg warmers',
+    'tube socks')
+$Feets = @('Altras','Nike','sabatons','cleets',
+    'boots','hiking boots','track shoes')
 $Bonuses = @('of greping','of editing','of application slaying','of Cloud slaying','of database monitoring',
     'of spreadsheet sorting','of log searching','of portal slaying','of Azure','of ticket closing','of event parsing')
 $Classes = @('Druid','Mage','Warrior',
@@ -154,19 +169,49 @@ Function Build-Weapon {
     $Char.Weapon = @{}
     $Mod = Randomize-List -InputList $Mods
     $Mat = Randomize-List -InputList $Mats
-    $Item = Randomize-List -InputList $Items
+    $Type = Randomize-List -InputList $Weapons
     $Bonus = Randomize-List -InputList $Bonuses
     $Mod = $Mod.substring(0,1).toupper()+$Mod.substring(1).tolower()
-    $Roll = +(Get-Random -Minimum 1 -Maximum 9)
-	$Char.weapon.roll = $Roll
-    $Char.weapon.mod = $Mod
-    $Char.weapon.mat = $Mat
-    $Char.weapon.item = $Item
-    $Char.weapon.bonus = $Bonus
-    $Char.weapon.weapon = "$Mod +$Roll $Mat $Item $Bonus"
+    $Roll = (Get-Random -Minimum 1 -Maximum 9)
+	$Char.Weapon.Roll = $Roll
+    $Char.Weapon.Mod = $Mod
+    $Char.Weapon.Mat = $Mat
+    $Char.Weapon.Type = $Type
+    $Char.Weapon.Bonus = $Bonus
+    $Char.Weapon.Weapon = "$Mod +$Roll $Mat $Type $Bonus"
 }
 
-function Get-Class {
+Function Build-Helmet {
+    $Char.Helmet = @{}
+    $Mat = Randomize-List -InputList $Mats
+    $Mat = $Mat.substring(0,1).toupper()+$Mat.substring(1).tolower()
+    $Type = Randomize-List -InputList $Helmets
+    $Char.Helmet.Mat = $Mat
+    $Char.Helmet.Type = $Type
+    $Char.Helmet.Helmet = "$Mat $Type"
+}
+
+Function Build-Shoulders {
+    $Char.Shoulders = @{}
+    $Mat = Randomize-List -InputList $Mats
+    $Mat = $Mat.substring(0,1).toupper()+$Mat.substring(1).tolower()
+    $Type = Randomize-List -InputList $Shoulders
+    $Char.Shoulders.Mat = $Mat
+    $Char.Shoulders.Type = $Type
+    $Char.Shoulders.Shoulders = "$Mat $Type"
+}
+
+Function Build-Gloves {
+    $Char.Gloves = @{}
+    $Mat = Randomize-List -InputList $Mats
+    $Mat = $Mat.substring(0,1).toupper()+$Mat.substring(1).tolower()
+    $Type = Randomize-List -InputList $Gloves
+    $Char.Gloves.Mat = $Mat
+    $Char.Gloves.Type = $Type
+    $Char.Gloves.Gloves = "$Mat $Type"
+}
+
+Function Get-Class {
     $Class = Randomize-List -InputList $Classes
     $Char.class = $Class
     Write-Output "$Class"
@@ -299,22 +344,22 @@ Function Fight {
         Main-Menu
         $BigMob = (Get-Mob)
         Write-Host "You are interrupted by a $BigMob"
+        $WeaponType = $Char.Weapon.Type
         $Rand = (Get-Random -Minimum 2 -Maximum 10)
-        $Weapon = $Char.Weapon.item
-		$MobMob = ($Monster1.mob)
+        $MobMob = ($Monster1.Mob)
         for ($mob = 1; $mob -le $Rand; $mob++ ) {
             $MobAttack = (MobAttack-Roll)
             Show-Progress -text "     The $MobMob $MobAttack" -count 3
             Write-Host ""
                 for ($you = 1; $you -le 1; $you++ ){
 					$YourAttack = (Randomize-List -inputlist $YourHits)
-                    Show-Progress -text "     You $YourAttack $MobMob with your $Weapon" -count 3
+                    Show-Progress -text "     You $YourAttack $MobMob with your $WeaponType" -count 3
                     Write-Host ""
                     }
             Start-Sleep -Milliseconds 500
         }
         Build-Weapon
-        $NewWeapon = $Char.Weapon.weapon
+        $NewWeapon = $Char.Weapon.Weapon
         Write-Host "New loot: $NewWeapon"
         $GLD = (Get-Random -Minimum 0 -Maximum 20)
         Write-Host "Gold earned: $GLD"
@@ -355,20 +400,25 @@ Function Do-Quest {
     }
 
 Function Main-Menu {
-    $Char.level = (Get-Level $Char.experience)
-    $Char.title = (Get-Title $Char.level)
-    $Name=($Char.name);$Race=($Char.race)
-    $Class=($Char.class);$Level = $Char.level;$STR=($Char.str);$Con=($Char.con);$EXP=($Char.experience)
-    $INT=($Char.int);$DEX=($Char.dex);$WIS=($Char.wis);$CHA=($Char.cha);$GLD=($Char.gold)
-    $Alignment=$Char.align;$Weapon=($Char.weapon.weapon)
-    $Title = ($Char.title)
+    $Char.Level = (Get-Level $Char.Experience)
+    $Char.Title = (Get-Title $Char.Level)
+    $Name=($Char.Name);$Race=($Char.Race)
+    $Class=($Char.Class);$Level = $Char.Level;$STR=($Char.Str);$Con=($Char.Con);$EXP=($Char.Experience)
+    $INT=($Char.Int);$DEX=($Char.dex);$WIS=($Char.Wis);$CHA=($Char.Cha);$GLD=($Char.Gold)
+    $Alignment=$Char.Align;$Weapon=($Char.Weapon.Weapon);$Helmet=($Char.Helmet.Helmet)
+    $Shoulders=($Char.Shoulders.Shoulders);$Gloves=($Char.Gloves.Gloves)
+    $Title = ($Char.Title)
     Write-Host "================================================================="
     Write-Host "|"
     Write-Host "| Welcome $Name, $Race $Class"
     Write-Host "| $Alignment"
     Write-Host "| Level $Level $Title"
-    Write-Host "| Current Weapon: "
+    Write-Host "| Weapon:"
     Write-Host "| $Weapon"
+    Write-Host "| Armor:"
+    Write-Host "|    $Helmet"
+    Write-Host "|    $Shoulders"
+    Write-Host "|    $Gloves"
     Write-Host "| Experience: $EXP"
     Write-Host "| Gold: $GLD"
     Write-Host "|"
@@ -395,6 +445,9 @@ Start-Sleep -Milliseconds 900
 Get-Stats
 
 While(1) {
+    Build-Helmet
+    Build-Shoulders
+    Build-Gloves
     Do-Quest $Level
     Fight
     Start-Sleep -Milliseconds 700
