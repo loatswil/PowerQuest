@@ -7,7 +7,7 @@ $Mods = @();$Mats = @();$Items = @();$Bonuses = @();$Gear = @();$Alignments = @(
 $Phrases = @();$Adjectives = @();$MonsterRaces = @();$Mobs = @();$MobHits = @();$YourHits = @()
 $MobHits = @('hits','tickles','pokes','bonks','slaps','crushes','stabs',
     'punches')
-$YourHits = @('hit','smash','bonk','slap','crush','stab',
+$YourHits = @('hit','smash','bonk','slap','crush','stab','reboot','compile','defrag',
     'punch','destroy','obliterate')
 $Phrases = @('with a bonecrushing sound','in your eye','on the back of your head',
     'with an old keyboard','with a terminal','in the face','really hard')
@@ -16,8 +16,8 @@ $Adjectives = @('digital','electronic','green','smoke-stained','plastic',
 $MonsterRaces = @('IBM','Compaq','Dell','Apple','Aruba','Juniper','Cisco',
     'Gateway 2000','Mac','Microtech','Logitech','Polycom','Poly')
 $Mobs = @('keyboard','mouse','SCSI cable','cell phone','iPad','switch',
-    'router','PC','laptop','monitor','UPS','DOT Matrix Printer','Laser Printer',
-	'flatbed scanner','backup tape','Phone')
+    'router','PC','laptop','monitor','UPS','DOT matrix printer','laser printer',
+	'flatbed scanner','backup tape','phone')
 $Alignments = @('Lawful Good - White Hat','Neutral Good - Cream Hat','Chaotic Good - Beige Hat',
     'Lawful Neutral - Light-Grey Hat','True Neutral - Grey Hat','Chaotic Neutral - Dark-Grey Hat',
     'Lawful Evil - Light-Black Hat','Neutral Evil - Black Hat','Chaotic Evil - Suicide Hat') 
@@ -47,7 +47,7 @@ $Apps = @('Net Neutrality','Big Data','Data Mining','Actionable Analytics','Arti
     'Robotics','Smart Industry 4.0','Internet Of Things (IoT)','Quantum Computing','Blockchain','Technological Unemployment',
     'Multi-Factor Authentication','Everything-as-a-Service','PowerBI','Artificial Inteligence','DUO','Blackboard',
     'Identity Management','Canvas','DNS','Skype','Active Directory','the network','the cloud',
-    'SharePoint','Teams','Azure','the firewall','Bitlocker','Exchange','the portal')
+    'SharePoint','Teams','Azure','the firewall','Bitlocker','Exchange','the portal','the CMDB')
 $Objects = @('the database','directories','servers','websites','folders','email','users','phone numbers','hard drives',
     'floppy disks','IP Addresses','software','firmware','memory','firewall rules','routing tables','fiber optics','NIC cards',
     'CAT5 cables','spreadsheets')
@@ -55,22 +55,22 @@ $Mods = @('deadly','magical','digital','electronic','binary',
     'caffeinated')
 $Mats = @('wooden','leather','golden','platinum','silver','iron','mithril','emerald','ruby',
     'diamond','steel','bronze','copper','saphire')
-$Weapons = @('pen','pencil','pager','cell phone','USB stick','hard drive','CAT-5 cable','power cord',
-    'keyboard','mouse','monitor','compact disk','floppy disk')
-$Helmets = @('fedora','visor','goggles','skull cap','baseball hat',
+$Weapons = @('pen','pencil','pager','cell phone','USB stick','hard drive','CAT-5 cable','power cord','web cam','mouse pad',
+    'keyboard','mouse','monitor','compact disk','floppy disk','halberd','cutlass','axe','rock')
+$Helmets = @('fedora','visor','goggles','skull cap','baseball hat','trucker hat','pith helmet',
     'scarf','coif','mask','beanie','cowboy hat','beret','top hat','turban')
-$Shoulders = @('spaulders','pauldrons','wings','shoulders',
-    'cloak')
-$Gloves = @('gauntlets','gloves','cuffs','braclet',
+$Shoulders = @('spaulders','pauldrons','wings','shoulders','shoulder pads','back-brace',
+    'cloak','jet pack','backpack','parachute','cape')
+$Gloves = @('gauntlets','gloves','cuffs','braclet','handwarmers','riding gloves','boxing gloves','haptic gloves',
     'prosthetic finger','ring','pinkie ring')
-$Chests = @('chest guard','t-shirt','hoodie','tuxedo coat',
-    'cuirass','hauberk')
+$Chests = @('chest guard','t-shirt','hoodie','tuxedo coat','tail coat','lab coat','waist coat','windbreaker',
+    'cuirass','hauberk','blazer','parka','fur coat','rain coat','puffy jacket','overcoat')
 $Arms = @('vambraces','bracers','arm guards','compression sleeves',
     'cuff links')
-$Legs = @('greaves','jeans','compression socks','leg warmers',
+$Legs = @('greaves','jeans','compression socks','leg warmers','bell bottoms','cargo pants','leggings','sweat pants',
     'tube socks')
-$Feets = @('Altras','Nike','sabatons','cleets',
-    'boots','hiking boots','track shoes')
+$Feet = @('Altras','Nike','sabatons','cleets','sandals','crocs','Lone Peak 5s','sneakers','flip flops','moccasins','snow boots',
+    'boots','hiking boots','track shoes','Ugg Boots')
 $Bonuses = @('of greping','of editing','of application slaying','of Cloud slaying','of database monitoring',
     'of spreadsheet sorting','of log searching','of portal slaying','of Azure','of ticket closing','of event parsing')
 $Classes = @('Druid','Mage','Warrior',
@@ -110,6 +110,21 @@ Function Get-Title {
     {$_ -in 20..1000} {$Title = "CIO"}
     }
     $Title
+}
+
+Function Get-Loot {
+    $LootRoll = (Get-Random -Minimum 1 -Maximum 9)
+    Switch ($LootRoll) {
+    {$_ -eq 1} {$Loot = (Build-Weapon)}
+    {$_ -eq 2} {$Loot = (Build-Helmet)}
+    {$_ -eq 3} {$Loot = (Build-Shoulders)}
+    {$_ -eq 4} {$Loot = (Build-Gloves)}
+    {$_ -eq 5} {$Loot = (Build-Chest)}
+    {$_ -eq 6} {$Loot = (Build-Arms)}
+    {$_ -eq 7} {$Loot = (Build-Legs)}
+    {$_ -eq 8} {$Loot = (Build-Feet)}
+    }
+    $Loot
 }
 
 Function Get-Level {
@@ -179,6 +194,7 @@ Function Build-Weapon {
     $Char.Weapon.Type = $Type
     $Char.Weapon.Bonus = $Bonus
     $Char.Weapon.Weapon = "$Mod +$Roll $Mat $Type $Bonus"
+    $Char.Weapon.Weapon
 }
 
 Function Build-Helmet {
@@ -189,6 +205,7 @@ Function Build-Helmet {
     $Char.Helmet.Mat = $Mat
     $Char.Helmet.Type = $Type
     $Char.Helmet.Helmet = "$Mat $Type"
+    $Char.Helmet.Helmet
 }
 
 Function Build-Shoulders {
@@ -199,6 +216,7 @@ Function Build-Shoulders {
     $Char.Shoulders.Mat = $Mat
     $Char.Shoulders.Type = $Type
     $Char.Shoulders.Shoulders = "$Mat $Type"
+    $Char.Shoulders.Shoulders
 }
 
 Function Build-Gloves {
@@ -209,6 +227,51 @@ Function Build-Gloves {
     $Char.Gloves.Mat = $Mat
     $Char.Gloves.Type = $Type
     $Char.Gloves.Gloves = "$Mat $Type"
+    $Char.Gloves.Gloves
+}
+
+Function Build-Chest {
+    $Char.Chests = @{}
+    $Mat = Randomize-List -InputList $Mats
+    $Mat = $Mat.substring(0,1).toupper()+$Mat.substring(1).tolower()
+    $Type = Randomize-List -InputList $Chests
+    $Char.Chests.Mat = $Mat
+    $Char.Chests.Type = $Type
+    $Char.Chests.Chest = "$Mat $Type"
+    $Char.Chests.Chest
+}
+
+Function Build-Arms {
+    $Char.Arms = @{}
+    $Mat = Randomize-List -InputList $Mats
+    $Mat = $Mat.substring(0,1).toupper()+$Mat.substring(1).tolower()
+    $Type = Randomize-List -InputList $Arms
+    $Char.Arms.Mat = $Mat
+    $Char.Arms.Type = $Type
+    $Char.Arms.Arms = "$Mat $Type"
+    $Char.Arms.Arms
+}
+
+Function Build-Legs {
+    $Char.Legs = @{}
+    $Mat = Randomize-List -InputList $Mats
+    $Mat = $Mat.substring(0,1).toupper()+$Mat.substring(1).tolower()
+    $Type = Randomize-List -InputList $Legs
+    $Char.Legs.Mat = $Mat
+    $Char.Legs.Type = $Type
+    $Char.Legs.Legs = "$Mat $Type"
+    $Char.Legs.Legs
+}
+
+Function Build-Feet {
+    $Char.Feet = @{}
+    $Mat = Randomize-List -InputList $Mats
+    $Mat = $Mat.substring(0,1).toupper()+$Mat.substring(1).tolower()
+    $Type = Randomize-List -InputList $Feet
+    $Char.Feet.Mat = $Mat
+    $Char.Feet.Type = $Type
+    $Char.Feet.Feet = "$Mat $Type"
+    $Char.Feet.Feet
 }
 
 Function Get-Class {
@@ -358,15 +421,16 @@ Function Fight {
                     }
             Start-Sleep -Milliseconds 500
         }
-        Build-Weapon
-        $NewWeapon = $Char.Weapon.Weapon
-        Write-Host "New loot: $NewWeapon"
+        $Loot = (Get-Loot)
+        Write-Host "New loot: $Loot"
         $GLD = (Get-Random -Minimum 0 -Maximum 20)
         Write-Host "Gold earned: $GLD"
         $Char.gold += $GLD
         $NewExp = ($Rand * 10)
         Write-Host "Experience earned: $NewExp"
         $Char.experience = ($Char.experience += $NewExp)
+        
+        
         Start-Sleep -Milliseconds 900
     }
 }
@@ -407,6 +471,7 @@ Function Main-Menu {
     $INT=($Char.Int);$DEX=($Char.dex);$WIS=($Char.Wis);$CHA=($Char.Cha);$GLD=($Char.Gold)
     $Alignment=$Char.Align;$Weapon=($Char.Weapon.Weapon);$Helmet=($Char.Helmet.Helmet)
     $Shoulders=($Char.Shoulders.Shoulders);$Gloves=($Char.Gloves.Gloves)
+    $Chest=($Char.Chests.Chest);$Arms=($Char.Arms.Arms);$Legs=($Char.Legs.Legs);$Feet=($Char.Feet.Feet)
     $Title = ($Char.Title)
     Write-Host "================================================================="
     Write-Host "|"
@@ -419,6 +484,10 @@ Function Main-Menu {
     Write-Host "|    $Helmet"
     Write-Host "|    $Shoulders"
     Write-Host "|    $Gloves"
+    Write-Host "|    $Chest"
+    Write-Host "|    $Arms"
+    Write-Host "|    $Legs"
+    Write-Host "|    $Feet"
     Write-Host "| Experience: $EXP"
     Write-Host "| Gold: $GLD"
     Write-Host "|"
@@ -445,9 +514,6 @@ Start-Sleep -Milliseconds 900
 Get-Stats
 
 While(1) {
-    Build-Helmet
-    Build-Shoulders
-    Build-Gloves
     Do-Quest $Level
     Fight
     Start-Sleep -Milliseconds 700
