@@ -462,113 +462,73 @@ function Get-Mob {
     }
 
 Function Fight {
-    Clear-Host
-    Main-Menu
-    $MyMaxHP = (($Char.Con)+50) 
-    $MyHp = $MyMaxHP
-    $MobMaxHP = 50
-    $MobHP = $MobMaxHP
-    $MyAC = 15
-    $MobAC = 10
-    $BigMob = (Get-Mob)
-    Write-Host "You are interrupted by a $BigMob"
-    Write-Host ""
-    $WeaponType = $Char.Weapon.Type
-    $MobMob = ($Monster1.Mob)
-    do {
-        $MyHit = 0
-        $MobHit = 0
-        $MyHit = (d20)
-        if ($MyHit -ge ($MobAC +1)){
-            if ($MyHit -eq 20){
-                $YourDamage = (((d12)+4)*2)
-                $MobHP = ($MobHP - $YourDamage)
-                Show-Progress -text "You hit $MobMob with a BONECRUSHING SOUND for $YourDamage!" -count 3
-                Write-Host "($MobHP/$MobMaxHp)"
-                #Write-Host ""
-                } else {
-                    $YourAttack = (Randomize-List -inputlist $YourHits)
-                    $YourDamage = ((d12)+4)
-                    $MobHP = ($MobHP - $YourDamage)
-                    Show-Progress -text "You roll a $MyHit and $YourAttack $MobMob with your $WeaponType for $YourDamage" -count 3
-                    Write-Host "($MobHP/$MobMaxHp)"
-                    #Write-Host ""
-                    }            
-                } else {Show-Progress -text "You roll a $MyHit and try to hit $MobMob, but fail" -count 3
-                Write-Host "($MobHP/$MobMaxHp)"
-                #Write-Host ""
-                }
-        $MobHit = (d20)
-        if ($MobHit -ge ($MyAC +1)){
-            if ($MobHit -eq 20){
-                $MobDamage = (((d8)+4)*2)
-                $MyHP = ($MyHP - $MobDamage)
-                Show-Progress -text "$MobMob hits you with a BONECRUSHING SOUND for $MobDamage!" -count 3
-                Write-Host "($MyHP/$MyMaxHP)"
-                Write-Host ""
-                #Write-Host ""    
-                } else {
-                    $MobAttack = (MobAttack-Roll)
-                    $MobDamage = ((d8)+4)
-                    $MyHP = ($MyHP - $MobDamage)
-                    Show-Progress -text "The $MobMob rolls a $MobHit and $MobAttack for $MobDamage" -count 3
-                    Write-Host "($MyHP/$MyMaxHP)"
-                    Write-Host ""
-                    #Write-Host ""    
-                }
-                } else {
-                Show-Progress -text "$MobMob rolls a $MobHit and tries to hit you, but fails" -count 3
-                Write-Host "($MyHP/$MyMaxHP)"
-                Write-Host ""    
-                #Write-Host ""    
-                }
-                Start-Sleep 2
-                } while ($MobHP -ge 1)
-
-        $Loot = (Get-Loot)
-        Write-Host "New loot: $Loot"
-        $GLD = (Get-Random -Minimum 0 -Maximum 20)
-        Write-Host "Gold earned: $GLD"
-        $Char.gold += $GLD
-        $NewExp = ($Rand * 10)
-        Write-Host "Experience earned: $NewExp"
-        $Char.experience = ($Char.experience += $NewExp)
-        Start-Sleep -Milliseconds 900
-    }
-
-Function Fight2 {
-    if ((Get-Random -Minimum 1 -Maximum 100) -le 25) {
+        if ((Get-Random -Minimum 1 -Maximum 100) -le 25) {
         Clear-Host
         Main-Menu
-        $MyHP = 100
-        $MobHP = 100
+        $MyMaxHP = (($Char.Con)+50) 
+        $MyHp = $MyMaxHP
+        $MobMaxHP = 50
+        $MobHP = $MobMaxHP
         $MyAC = 15
         $MobAC = 10
         $BigMob = (Get-Mob)
         Write-Host "You are interrupted by a $BigMob"
+        Write-Host ""
         $WeaponType = $Char.Weapon.Type
-        $Rand = (Get-Random -Minimum 2 -Maximum 10)
         $MobMob = ($Monster1.Mob)
-        for ($mob = 1; $mob -le $Rand; $mob++ ) {
-            $MobAttack = (MobAttack-Roll)
-            Show-Progress -text "     The $MobMob $MobAttack" -count 3
-            Write-Host ""
-                for ($you = 1; $you -le 1; $you++ ){
-					$YourAttack = (Randomize-List -inputlist $YourHits)
-                    Show-Progress -text "     You $YourAttack $MobMob with your $WeaponType" -count 3
-                    Write-Host ""
+        do {
+            $MyHit = 0
+            $MobHit = 0
+            $MyHit = (d20)
+            if ($MyHit -ge ($MobAC +1)){
+                if ($MyHit -eq 20){
+                    $YourDamage = (((d12)+4)*2)
+                    $MobHP = ($MobHP - $YourDamage)
+                    Show-Progress -text "You hit $MobMob with a BONECRUSHING SOUND for $YourDamage!" -count 3
+                    Write-Host "($MobHP/$MobMaxHp)"
+                    } else {
+                        $YourAttack = (Randomize-List -inputlist $YourHits)
+                        $YourDamage = ((d12)+4)
+                        $MobHP = ($MobHP - $YourDamage)
+                        Show-Progress -text "You roll a $MyHit and $YourAttack $MobMob with your $WeaponType for $YourDamage" -count 3
+                        Write-Host "($MobHP/$MobMaxHp)"
+                        }            
+                    } else {Show-Progress -text "You roll a $MyHit and try to hit $MobMob, but fail" -count 3
+                    Write-Host "($MobHP/$MobMaxHp)"
                     }
-            Start-Sleep -Milliseconds 500
-        }
-        $Loot = (Get-Loot)
-        Write-Host "New loot: $Loot"
-        $GLD = (Get-Random -Minimum 0 -Maximum 20)
-        Write-Host "Gold earned: $GLD"
-        $Char.gold += $GLD
-        $NewExp = ($Rand * 10)
-        Write-Host "Experience earned: $NewExp"
-        $Char.experience = ($Char.experience += $NewExp)
-        Start-Sleep -Milliseconds 900
+            $MobHit = (d20)
+            if ($MobHit -ge ($MyAC +1)){
+                if ($MobHit -eq 20){
+                    $MobDamage = (((d8)+4)*2)
+                    $MyHP = ($MyHP - $MobDamage)
+                    Show-Progress -text "$MobMob hits you with a BONECRUSHING SOUND for $MobDamage!" -count 3
+                    Write-Host "($MyHP/$MyMaxHP)"
+                    Write-Host ""
+                    } else {
+                        $MobAttack = (MobAttack-Roll)
+                        $MobDamage = ((d8)+4)
+                        $MyHP = ($MyHP - $MobDamage)
+                        Show-Progress -text "The $MobMob rolls a $MobHit and $MobAttack for $MobDamage" -count 3
+                        Write-Host "($MyHP/$MyMaxHP)"
+                        Write-Host ""
+                    }
+                    } else {
+                    Show-Progress -text "$MobMob rolls a $MobHit and tries to hit you, but fails" -count 3
+                    Write-Host "($MyHP/$MyMaxHP)"
+                    Write-Host ""    
+                    }
+                    Start-Sleep 2
+                    } while ($MobHP -ge 1)
+
+            $Loot = (Get-Loot)
+            Write-Host "New loot: $Loot"
+            $GLD = (Get-Random -Minimum 0 -Maximum 20)
+            Write-Host "Gold earned: $GLD"
+            $Char.gold += $GLD
+            $NewExp = ($Rand * 10)
+            Write-Host "Experience earned: $NewExp"
+            $Char.experience = ($Char.experience += $NewExp)
+            Start-Sleep -Milliseconds 900
     }
 }
 
