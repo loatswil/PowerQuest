@@ -53,24 +53,26 @@ $Objects = @('the database','directories','servers','websites','folders','email'
     'CAT5 cables','spreadsheets')
 $Mods = @('deadly','magical','digital','electronic','binary',
     'caffeinated')
-$Mats = @('wooden','leather','golden','platinum','silver','iron','mithril','emerald','ruby',
-    'diamond','steel','bronze','copper','saphire')
+$Mats = @('wooden','leather','golden','platinum','silver','iron','mithril','emerald','ruby','cloud based','high tech','digital',
+    'diamond','steel','bronze','copper','saphire','laser','virtual','cyber')
 $Weapons = @('pen','pencil','pager','cell phone','USB stick','hard drive','CAT-5 cable','power cord','web cam','mouse pad',
-    'keyboard','mouse','monitor','compact disk','floppy disk','halberd','cutlass','axe','rock')
-$Helmets = @('fedora','visor','goggles','skull cap','baseball hat','trucker hat','pith helmet',
+    'mouse','compact disk','floppy disk','halberd','cutlass','axe','rock')
+$Helmets = @('fedora','visor','goggles','skull cap','baseball hat','trucker hat','pith helmet','VR goggles',
     'scarf','coif','mask','beanie','cowboy hat','beret','top hat','turban')
-$Shoulders = @('spaulders','pauldrons','wings','shoulders','shoulder pads','back-brace',
+$Shoulders = @('spaulders','pauldrons','wings','shoulders','shoulder pads','back-brace','body camera',
     'cloak','jet pack','backpack','parachute','cape')
 $Gloves = @('gauntlets','gloves','cuffs','braclet','handwarmers','riding gloves','boxing gloves','haptic gloves',
-    'prosthetic finger','ring','pinkie ring')
-$Chests = @('chest guard','t-shirt','hoodie','tuxedo coat','tail coat','lab coat','waist coat','windbreaker',
+    'prosthetic finger','ring','pinkie ring','mouse')
+$Chests = @('chest guard','t-shirt','hoodie','tuxedo coat','tail coat','lab coat','waist coat','windbreaker','battery pack',
     'cuirass','hauberk','blazer','parka','fur coat','rain coat','puffy jacket','overcoat')
-$Arms = @('vambraces','bracers','arm guards','compression sleeves',
+$Arms = @('vambraces','bracers','arm guards','compression sleeves','solar arm bands',
     'cuff links')
 $Legs = @('greaves','jeans','compression socks','leg warmers','bell bottoms','cargo pants','leggings','sweat pants',
-    'tube socks')
-$Feet = @('Altras','Nike','sabatons','cleets','sandals','crocs','Lone Peak 5s','sneakers','flip flops','moccasins','snow boots',
+    'tube socks','money clip','knee brace')
+$Feet = @('Altras','Nikes','sabatons','cleets','sandals','crocs','Lone Peak 5s','sneakers','flip flops','moccasins','snow boots',
     'boots','hiking boots','track shoes','Ugg Boots')
+$Shields = @('keyboard','monitor','tape reel',
+    'recycle bin','mousepad','cabinet door','CPU fan')
 $Bonuses = @('of greping','of editing','of application slaying','of Cloud slaying','of database monitoring',
     'of spreadsheet sorting','of log searching','of portal slaying','of Azure','of ticket closing','of event parsing')
 $Classes = @('Druid','Mage','Warrior',
@@ -97,6 +99,26 @@ function Show-Progress {
         }
 }
 
+function d4 {
+    Get-Random -Minimum 1 -Maximum 5
+    }
+
+function d6 {
+    Get-Random -Minimum 1 -Maximum 7
+    }
+
+function d8 {
+    Get-Random -Minimum 1 -Maximum 9
+    }
+
+function d12 {
+    Get-Random -Minimum 1 -Maximum 13
+    }
+
+function d20 {
+    Get-Random -Minimum 1 -Maximum 21
+    }
+
 Function Get-Title {
     Param(
          [int]$InputLevel
@@ -113,7 +135,7 @@ Function Get-Title {
 }
 
 Function Get-Loot {
-    $LootRoll = (Get-Random -Minimum 1 -Maximum 9)
+    $LootRoll = (Get-Random -Minimum 1 -Maximum 10)
     Switch ($LootRoll) {
     {$_ -eq 1} {$Loot = (Build-Weapon)}
     {$_ -eq 2} {$Loot = (Build-Helmet)}
@@ -123,8 +145,35 @@ Function Get-Loot {
     {$_ -eq 6} {$Loot = (Build-Arms)}
     {$_ -eq 7} {$Loot = (Build-Legs)}
     {$_ -eq 8} {$Loot = (Build-Feet)}
+    {$_ -eq 9} {$Loot = (Build-Shield)}
     }
     $Loot
+}
+
+Function Get-Modifier {
+    Param(
+         [int]$Stat
+       )
+    Switch ($Stat) {
+    {$_ -eq 1} {$Modifier = -5}
+    {$_ -in 2..3} {$Modifier = -4}
+    {$_ -in 4..5} {$Modifier = -3}
+    {$_ -in 6..7} {$Modifier = -2}
+    {$_ -in 8..9} {$Modifier = -1}
+    {$_ -in 10..11} {$Modifier = 0}
+    {$_ -in 12..13} {$Modifier = 1}
+    {$_ -in 14..15} {$Modifier = 2}
+    {$_ -in 16..17} {$Modifier = 3}
+    {$_ -in 18..19} {$Modifier = 4}
+    {$_ -eq 20..21} {$Modifier = 5}
+    {$_ -eq 22..23} {$Modifier = 6}
+    {$_ -eq 24..25} {$Modifier = 7}
+    {$_ -eq 26..27} {$Modifier = 8}
+    {$_ -eq 28..29} {$Modifier = 9}
+    {$_ -eq 30..100} {$Modifier = 10}
+    }
+    $Modifier
+
 }
 
 Function Get-Level {
@@ -274,6 +323,17 @@ Function Build-Feet {
     $Char.Feet.Feet
 }
 
+Function Build-Shield {
+    $Char.Shield = @{}
+    $Mat = Randomize-List -InputList $Mats
+    $Mat = $Mat.substring(0,1).toupper()+$Mat.substring(1).tolower()
+    $Type = Randomize-List -InputList $Shields
+    $Char.Shield.Mat = $Mat
+    $Char.Shield.Type = $Type
+    $Char.Shield.Shield = "$Mat $Type"
+    $Char.Shield.Shield
+}
+
 Function Get-Class {
     $Class = Randomize-List -InputList $Classes
     $Char.class = $Class
@@ -402,9 +462,88 @@ function Get-Mob {
     }
 
 Function Fight {
+    Clear-Host
+    Main-Menu
+    $MyMaxHP = (($Char.Con)+50) 
+    $MyHp = $MyMaxHP
+    $MobMaxHP = 50
+    $MobHP = $MobMaxHP
+    $MyAC = 15
+    $MobAC = 10
+    $BigMob = (Get-Mob)
+    Write-Host "You are interrupted by a $BigMob"
+    Write-Host ""
+    $WeaponType = $Char.Weapon.Type
+    $MobMob = ($Monster1.Mob)
+    do {
+        $MyHit = 0
+        $MobHit = 0
+        $MyHit = (d20)
+        if ($MyHit -ge ($MobAC +1)){
+            if ($MyHit -eq 20){
+                $YourDamage = (((d12)+4)*2)
+                $MobHP = ($MobHP - $YourDamage)
+                Show-Progress -text "You hit $MobMob with a BONECRUSHING SOUND for $YourDamage!" -count 3
+                Write-Host "($MobHP/$MobMaxHp)"
+                #Write-Host ""
+                } else {
+                    $YourAttack = (Randomize-List -inputlist $YourHits)
+                    $YourDamage = ((d12)+4)
+                    $MobHP = ($MobHP - $YourDamage)
+                    Show-Progress -text "You roll a $MyHit and $YourAttack $MobMob with your $WeaponType for $YourDamage" -count 3
+                    Write-Host "($MobHP/$MobMaxHp)"
+                    #Write-Host ""
+                    }            
+                } else {Show-Progress -text "You roll a $MyHit and try to hit $MobMob, but fail" -count 3
+                Write-Host "($MobHP/$MobMaxHp)"
+                #Write-Host ""
+                }
+        $MobHit = (d20)
+        if ($MobHit -ge ($MyAC +1)){
+            if ($MobHit -eq 20){
+                $MobDamage = (((d8)+4)*2)
+                $MyHP = ($MyHP - $MobDamage)
+                Show-Progress -text "$MobMob hits you with a BONECRUSHING SOUND for $MobDamage!" -count 3
+                Write-Host "($MyHP/$MyMaxHP)"
+                Write-Host ""
+                #Write-Host ""    
+                } else {
+                    $MobAttack = (MobAttack-Roll)
+                    $MobDamage = ((d8)+4)
+                    $MyHP = ($MyHP - $MobDamage)
+                    Show-Progress -text "The $MobMob rolls a $MobHit and $MobAttack for $MobDamage" -count 3
+                    Write-Host "($MyHP/$MyMaxHP)"
+                    Write-Host ""
+                    #Write-Host ""    
+                }
+                } else {
+                Show-Progress -text "$MobMob rolls a $MobHit and tries to hit you, but fails" -count 3
+                Write-Host "($MyHP/$MyMaxHP)"
+                Write-Host ""    
+                #Write-Host ""    
+                }
+                Start-Sleep 2
+                } while ($MobHP -ge 1)
+
+        $Loot = (Get-Loot)
+        Write-Host "New loot: $Loot"
+        $GLD = (Get-Random -Minimum 0 -Maximum 20)
+        Write-Host "Gold earned: $GLD"
+        $Char.gold += $GLD
+        $NewExp = ($Rand * 10)
+        Write-Host "Experience earned: $NewExp"
+        $Char.experience = ($Char.experience += $NewExp)
+        Start-Sleep -Milliseconds 900
+    }
+
+Function Fight2 {
     if ((Get-Random -Minimum 1 -Maximum 100) -le 25) {
         Clear-Host
         Main-Menu
+        $MyHP = 100
+        $MobHP = 100
+        $MyAC = 15
+        $MobAC = 10
         $BigMob = (Get-Mob)
         Write-Host "You are interrupted by a $BigMob"
         $WeaponType = $Char.Weapon.Type
@@ -429,8 +568,6 @@ Function Fight {
         $NewExp = ($Rand * 10)
         Write-Host "Experience earned: $NewExp"
         $Char.experience = ($Char.experience += $NewExp)
-        
-        
         Start-Sleep -Milliseconds 900
     }
 }
@@ -470,7 +607,7 @@ Function Main-Menu {
     $Class=($Char.Class);$Level = $Char.Level;$STR=($Char.Str);$Con=($Char.Con);$EXP=($Char.Experience)
     $INT=($Char.Int);$DEX=($Char.dex);$WIS=($Char.Wis);$CHA=($Char.Cha);$GLD=($Char.Gold)
     $Alignment=$Char.Align;$Weapon=($Char.Weapon.Weapon);$Helmet=($Char.Helmet.Helmet)
-    $Shoulders=($Char.Shoulders.Shoulders);$Gloves=($Char.Gloves.Gloves)
+    $Shoulders=($Char.Shoulders.Shoulders);$Gloves=($Char.Gloves.Gloves);$Shield=($Char.Shield.Shield)
     $Chest=($Char.Chests.Chest);$Arms=($Char.Arms.Arms);$Legs=($Char.Legs.Legs);$Feet=($Char.Feet.Feet)
     $Title = ($Char.Title)
     Write-Host "================================================================="
@@ -481,13 +618,14 @@ Function Main-Menu {
     Write-Host "| Weapon:"
     Write-Host "| $Weapon"
     Write-Host "| Armor:"
-    Write-Host "|    $Helmet"
-    Write-Host "|    $Shoulders"
-    Write-Host "|    $Gloves"
-    Write-Host "|    $Chest"
-    Write-Host "|    $Arms"
-    Write-Host "|    $Legs"
-    Write-Host "|    $Feet"
+    Write-Host "|    Helm:      $Helmet"
+    Write-Host "|    Shoulders: $Shoulders"
+    Write-Host "|    Shield:    $Shield"
+    Write-Host "|    Hands:     $Gloves"
+    Write-Host "|    Chest:     $Chest"
+    Write-Host "|    Arms:      $Arms"
+    Write-Host "|    Legs:      $Legs"
+    Write-Host "|    Feet:      $Feet"
     Write-Host "| Experience: $EXP"
     Write-Host "| Gold: $GLD"
     Write-Host "|"
