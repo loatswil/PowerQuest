@@ -5,11 +5,11 @@ $Monster1 = @{}
 $Adverbs = @();$Actions = @();$Apps = @();$Objects = @();$Verbs = @()
 $Mods = @();$Mats = @();$Items = @();$Bonuses = @();$Gear = @();$Alignments = @();$Helmets = @()
 $Phrases = @();$Adjectives = @();$MonsterRaces = @();$Mobs = @();$MobHits = @();$YourHits = @()
-$MobHits = @('hits','tickles','pokes','bonks','slaps','crushes','stabs',
+$MobHits = @('hits','tickles','pokes','bonks','slaps','crushes','stabs','defrags',
     'punches')
 $YourHits = @('hit','smash','bonk','slap','crush','stab','reboot','compile','defrag',
     'punch','destroy','obliterate')
-$Phrases = @('with a bonecrushing sound','in your eye','on the back of your head',
+$Phrases = @('with a power cord','in your eye','on the back of your head','with a USB cable',
     'with an old keyboard','with a terminal','in the face','really hard')
 $Adjectives = @('digital','electronic','green','smoke-stained','plastic',
     'grungy','virtual','cloud-based','shiny','dingy','brand new','state-of-the-art')
@@ -358,20 +358,6 @@ function Get-Align {
     Write-Output $Align
 }
 
-function Write-Menu {
-    Clear-Host
-    Write-Information "" -InformationAction Continue
-    Write-Information "*********************************" -InformationAction Continue
-    Write-Information "*                               *" -InformationAction Continue
-    Write-Information "* oO[-Welcome to PowerQuest-]Oo *" -InformationAction Continue
-    Write-Information "*                               *" -InformationAction Continue
-    Write-Information "*********************************" -InformationAction Continue
-    Write-Information "" -InformationAction Continue
-    Show-Progress "Sensing your virtual self" -count 3
-    Write-Information "" -InformationAction Continue
-    Write-Information "" -InformationAction Continue
-}
-
 Function Get-Stats {
     Clear-Host
     Show-Progress "Rolling up your stats" -numbers 3
@@ -451,46 +437,58 @@ Function MobAttack-Roll {
     }
 
 function Get-Mob {
+    Param(
+    [int]$Level
+    )
     $Adjective = Randomize-List -InputList $Adjectives
     $MonsterRace = Randomize-List -InputList $MonsterRaces
     $Mob = Randomize-List -InputList $Mobs
     $Adjective = $Adjective.substring(0,1).toupper()+$Adjective.substring(1).tolower()
     "$Adjective $MonsterRace $Mob"
-    $Monster1['adjective']=$Adjective
-    $Monster1['race']=$MonsterRace
-    $Monster1['mob']=$Mob
+    $HP = (($Level * 10)+10)
+    $Monster1.lvl=$Level
+    $Monster1.adjective=$Adjective
+    $Monster1.race=$MonsterRace
+    $Monster1.mob=$Mob
+    $Monster1.hp=$HP
     }
 
 Function Fight {
-        if ((Get-Random -Minimum 1 -Maximum 100) -le 25) {
+        param(
+            [int]$Level
+        )
+        if ((Get-Random -Minimum 1 -Maximum 100) -le 100) {
         Clear-Host
         Main-Menu
-        $MyMaxHP = (($Char.Con)+50) 
-        $MyHp = $MyMaxHP
-        $MobMaxHP = 50
+        $BigMob = (Get-Mob $Level)
+        $MobMaxHP = $Monster1.hp
         $MobHP = $MobMaxHP
-        $MyAC = 15
+        $MobMob = $Monster1.Mob
         $MobAC = 10
-        $BigMob = (Get-Mob)
-        Write-Host "You are interrupted by a $BigMob"
-        Write-Host ""
+        $Moblvl = $Monster1.lvl
+
         $WeaponType = $Char.Weapon.Type
-        $MobMob = ($Monster1.Mob)
+        $MyMaxHP = $Char.MaxHP
+        $MyHp = $MyMaxHP
+        $MyAC = $Char.AC
+        $MyStrBonus = (Get-Modifier $Char.Str)
+        Write-Host "You are interrupted by a level $Moblvl $BigMob"
+        Write-Host ""
         do {
             $MyHit = 0
             $MobHit = 0
             $MyHit = (d20)
             if ($MyHit -ge ($MobAC +1)){
                 if ($MyHit -eq 20){
-                    $YourDamage = (((d12)+4)*2)
+                    $YourDamage = (((d12)+$MyStrBonus)*2)
                     $MobHP = ($MobHP - $YourDamage)
-                    Show-Progress -text "You hit $MobMob with a BONECRUSHING SOUND for $YourDamage!" -count 3
+                    Show-Progress -text "You hit $MobMob with a BONECRUSHING SOUND!" -count 3
                     Write-Host "($MobHP/$MobMaxHp)"
                     } else {
                         $YourAttack = (Randomize-List -inputlist $YourHits)
-                        $YourDamage = ((d12)+4)
+                        $YourDamage = ((d12)+$MyStrBonus)
                         $MobHP = ($MobHP - $YourDamage)
-                        Show-Progress -text "You roll a $MyHit and $YourAttack $MobMob with your $WeaponType for $YourDamage" -count 3
+                        Show-Progress -text "You roll a $MyHit and $YourAttack $MobMob with your $WeaponType" -count 3
                         Write-Host "($MobHP/$MobMaxHp)"
                         }            
                     } else {Show-Progress -text "You roll a $MyHit and try to hit $MobMob, but fail" -count 3
@@ -501,19 +499,19 @@ Function Fight {
                 if ($MobHit -eq 20){
                     $MobDamage = (((d8)+4)*2)
                     $MyHP = ($MyHP - $MobDamage)
-                    Show-Progress -text "$MobMob hits you with a BONECRUSHING SOUND for $MobDamage!" -count 3
+                    Show-Progress -text "The $MobMob hits you with a BONECRUSHING SOUND!" -count 3
                     Write-Host "($MyHP/$MyMaxHP)"
                     Write-Host ""
                     } else {
                         $MobAttack = (MobAttack-Roll)
                         $MobDamage = ((d8)+4)
                         $MyHP = ($MyHP - $MobDamage)
-                        Show-Progress -text "The $MobMob rolls a $MobHit and $MobAttack for $MobDamage" -count 3
+                        Show-Progress -text "The $MobMob rolls a $MobHit and $MobAttack" -count 3
                         Write-Host "($MyHP/$MyMaxHP)"
                         Write-Host ""
                     }
                     } else {
-                    Show-Progress -text "$MobMob rolls a $MobHit and tries to hit you, but fails" -count 3
+                    Show-Progress -text "The $MobMob rolls a $MobHit and tries to hit you, but fails" -count 3
                     Write-Host "($MyHP/$MyMaxHP)"
                     Write-Host ""    
                     }
@@ -525,16 +523,16 @@ Function Fight {
             $GLD = (Get-Random -Minimum 0 -Maximum 20)
             Write-Host "Gold earned: $GLD"
             $Char.gold += $GLD
-            $NewExp = ($Rand * 10)
+            $NewExp = ($Level * 10)
             Write-Host "Experience earned: $NewExp"
             $Char.experience = ($Char.experience += $NewExp)
-            Start-Sleep -Milliseconds 900
+            Start-Sleep -Milliseconds 1500
     }
 }
 
-Function Do-Quest {
-    Param(
-     [int]$CurrentLevel
+Function Quest {
+    param(
+        [int]$Level
     )
     Clear-Host
     Main-Menu
@@ -557,18 +555,22 @@ Function Do-Quest {
     $Exp = ($Quests * 50)
     Write-Host "Experience gained: $Exp"
     $Char.experience = ($Char.experience += $Exp)
-    Start-Sleep -Milliseconds 900
-    }
+    Start-Sleep -Milliseconds 1500
+}
 
 Function Main-Menu {
     $Char.Level = (Get-Level $Char.Experience)
     $Char.Title = (Get-Title $Char.Level)
+    $Char.AC = ((Get-Modifier $Char.DEX)+15)
+    $Char.MaxHP = (((Get-Modifier $Char.Con)+50)+$Char.Level)
     $Name=($Char.Name);$Race=($Char.Race)
     $Class=($Char.Class);$Level = $Char.Level;$STR=($Char.Str);$Con=($Char.Con);$EXP=($Char.Experience)
     $INT=($Char.Int);$DEX=($Char.dex);$WIS=($Char.Wis);$CHA=($Char.Cha);$GLD=($Char.Gold)
     $Alignment=$Char.Align;$Weapon=($Char.Weapon.Weapon);$Helmet=($Char.Helmet.Helmet)
     $Shoulders=($Char.Shoulders.Shoulders);$Gloves=($Char.Gloves.Gloves);$Shield=($Char.Shield.Shield)
     $Chest=($Char.Chests.Chest);$Arms=($Char.Arms.Arms);$Legs=($Char.Legs.Legs);$Feet=($Char.Feet.Feet)
+    $MyAC=($Char.AC)
+    $MyMaxHP=($Char.MaxHP)
     $Title = ($Char.Title)
     Write-Host "================================================================="
     Write-Host "|"
@@ -577,7 +579,7 @@ Function Main-Menu {
     Write-Host "| Level $Level $Title"
     Write-Host "| Weapon:"
     Write-Host "| $Weapon"
-    Write-Host "| Armor:"
+    Write-Host "| Armor Class: $MyAC  Hit Points: $MyMaxHP"
     Write-Host "|    Helm:      $Helmet"
     Write-Host "|    Shoulders: $Shoulders"
     Write-Host "|    Shield:    $Shield"
@@ -600,7 +602,22 @@ Function Main-Menu {
     Write-Host "================================================================="
 }
 
+function Write-Menu {
+    Clear-Host
+    Write-Information "" -InformationAction Continue
+    Write-Information "*********************************" -InformationAction Continue
+    Write-Information "*                               *" -InformationAction Continue
+    Write-Information "* oO[-Welcome to PowerQuest-]Oo *" -InformationAction Continue
+    Write-Information "*                               *" -InformationAction Continue
+    Write-Information "*********************************" -InformationAction Continue
+    Write-Information "" -InformationAction Continue
+    Show-Progress "Sensing your virtual self" -count 3
+    Write-Information "" -InformationAction Continue
+    Write-Information "" -InformationAction Continue
+}
+
 $Char.experience = 0
+$Char.level = 1
 Build-Weapon
 
 Write-Menu
@@ -612,8 +629,9 @@ Start-Sleep -Milliseconds 900
 Get-Stats
 
 While(1) {
-    Do-Quest $Level
-    Fight
+    $Level = ($Char.Level)
+    (Quest $Level)
+    (Fight $Level)
     Start-Sleep -Milliseconds 700
     $wsh = New-Object -ComObject WScript.Shell
     $wsh.SendKeys('+{F15}')
