@@ -488,10 +488,10 @@ Function Fight {
                         $YourAttack = (Randomize-List -inputlist $YourHits)
                         $YourDamage = ((d12)+$MyStrBonus)
                         $MobHP = ($MobHP - $YourDamage)
-                        Show-Progress -text "You roll a $MyHit and $YourAttack $MobMob with your $WeaponType" -count 3
+                        Show-Progress -text "You $YourAttack $MobMob with your $WeaponType" -count 3
                         Write-Host "($MobHP/$MobMaxHp)"
                         }            
-                    } else {Show-Progress -text "You roll a $MyHit and try to hit $MobMob, but fail" -count 3
+                    } else {Show-Progress -text "You try to hit $MobMob, but fail" -count 3
                     Write-Host "($MobHP/$MobMaxHp)"
                     }
             $MobHit = (d20)
@@ -506,12 +506,12 @@ Function Fight {
                         $MobAttack = (MobAttack-Roll)
                         $MobDamage = ((d8)+4)
                         $MyHP = ($MyHP - $MobDamage)
-                        Show-Progress -text "The $MobMob rolls a $MobHit and $MobAttack" -count 3
+                        Show-Progress -text "The $MobMob $MobAttack" -count 3
                         Write-Host "($MyHP/$MyMaxHP)"
                         Write-Host ""
                     }
                     } else {
-                    Show-Progress -text "The $MobMob rolls a $MobHit and tries to hit you, but fails" -count 3
+                    Show-Progress -text "The $MobMob tries to hit you, but fails" -count 3
                     Write-Host "($MyHP/$MyMaxHP)"
                     Write-Host ""    
                     }
@@ -523,7 +523,7 @@ Function Fight {
             $GLD = (Get-Random -Minimum 0 -Maximum 20)
             Write-Host "Gold earned: $GLD"
             $Char.gold += $GLD
-            $NewExp = ($Level * 10)
+            $NewExp = ($Level * 100)
             Write-Host "Experience earned: $NewExp"
             $Char.experience = ($Char.experience += $NewExp)
             Start-Sleep -Milliseconds 1500
@@ -562,7 +562,7 @@ Function Main-Menu {
     $Char.Level = (Get-Level $Char.Experience)
     $Char.Title = (Get-Title $Char.Level)
     $Char.AC = ((Get-Modifier $Char.DEX)+15)
-    $Char.MaxHP = (((Get-Modifier $Char.Con)+50)+$Char.Level)
+    $Char.MaxHP = (((Get-Modifier $Char.Con)+20)+($Char.Level * 10))
     $Name=($Char.Name);$Race=($Char.Race)
     $Class=($Char.Class);$Level = $Char.Level;$STR=($Char.Str);$Con=($Char.Con);$EXP=($Char.Experience)
     $INT=($Char.Int);$DEX=($Char.dex);$WIS=($Char.Wis);$CHA=($Char.Cha);$GLD=($Char.Gold)
